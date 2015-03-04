@@ -1,0 +1,60 @@
+"DOC","type","country","status","binding (Y/N)","available (Y/N)","year","title","description","symbol","note"
+"D001","NPOA","Indonesia","adopted","N","Y",2010,"D001_Indonesia2010.pdf",,"D001_Indonesia2010.pdf",
+"D002","NPOA","India",,,"N",,,,,
+"D003","NPOA","Spain","adopted",,"Y",2009,"D003_EU2009.pdf",,"D003_EU2009.pdf",
+"D004","NPOA","Taiwan Province of China","draft",,"Y",2006,"D004_Taiwan2014.pdf",,"D004_Taiwan2014.pdf","not sure about the year"
+"D005","NPOA","Argentina","adopted",,"Y",2009,"D005_Argentina2009.pdf",,"D005_Argentina2009.pdf","no name of department"
+"D006","NPOA","Mexico","adopted",,"Y",2004,"D006_Mexico2004.pdf",,"D006_Mexico2004.pdf",
+"D007","NPOA","United States of America","adopted",,"Y",2001,"D007_USA2001.pdf",,"D007_USA2001.pdf","final"
+"D008","NPOA","Pakistan",,,"N",,,,,
+"D009","NPOA","Malaysia","adopted",,"Y",2006,"D009_Malaysia2006.pdf",,"D009_Malaysia2006.pdf",
+"D010","NPOA","Japan","adopted",,"Y",2001,"D010_Japan2001.pdf",,"D010_Japan2001.pdf",
+"D011","NPOA","Japan",,,"Y",2009,"D011_Japan2009.pdf",,"D011_Japan2009.pdf",
+"D012","NPOA","France","adopted",,"Y",2009,"D012_EU2009.pdf",,"D012_EU2009.pdf","copy of D003 file"
+"D013","NPOA","Thailand","draft",,"Y",,"D013_ThailandNPOA.pdf",,"D013_ThailandNPOA.pdf","produced 2010 or before"
+"D014","NPOA","Brazil","nonofficial",,"Y",2005,"D014_Brazil2005.pdf",,"D014_Brazil2005.pdf",
+"D015","NPOA","Brazil","draft",,"Y",2011,"D015_Brazil2011.pdf",,"D015_Brazil2011.pdf",
+"D016","NPOA","Sri Lanka","nonofficial",,"Y",2013,"D016_SriLanka2013.pdf",,"D016_SriLanka2013.pdf",
+"D017","NPOA","New Zealand","approved",,"Y",2008,"D017_NewZealand2008.pdf",,"D017_NewZealand2008.pdf",
+"D018","NPOA","New Zealand","adopted",,"Y",2013,"D018_NewZealand2013.pdf",,"D018_NewZealand2013.pdf",
+"D019","NPOA","Portugal","adopted",,"Y",2009,"D019_EU2009.pdf",,"D019_EU2009.pdf","copy of D003 file"
+"D020","NPOA","Nigeria",,,"N",,,,,
+"D021","NPOA","Iran (Islamic Republic of)",,,"N",,,,,
+"D022","NPOA","United Kingdom","adopted",,"Y",2009,"D022_EU2009.pdf",,"D022_EU2009.pdf","copy  of D003 file"
+"D023","NPOA","United Kingdom","draft",,"Y",2011,"D023_UK2011.pdf",,"D023_UK2011.pdf",
+"D024","NPOA","Republic of Korea","draft",,"Y",2011,"D024_Korea2011.pdf",,"D024_Korea2011.pdf",
+"D025","NPOA","Canada","adopted",,"Y",2007,"D025_Canada2007.pdf",,"D025_Canada2007.pdf",
+"D026","NPOA","Peru","draft",,"Y",2013,"D026_Peru2013.pdf",,"D026_Peru2013.pdf",
+"D027","NPOA","Peru","adopted",,"Y",2014,"D027_Peru2014.pdf",,"D027_Peru2014.pdf",
+"D028","NPOA","Yemen",,,"N",,,,,
+"D029","NPOA","Australia","adopted",,"Y",2004,"D029_Australia2004.pdf",,"D029_Australia2004.pdf",
+"D030","NPOA","Senegal","draft",,"Y",2005,"D030_Senegal2005.pdf",,"D030_Senegal2005.pdf",
+"D031","NPOA","Venezuela (Bolivarian Republic of)","nonofficial",,"Y",2006,"D031_Venezuela2006.pdf",,"D031_Venezuela2006.pdf",
+"D032","NPOA","Belize","draft",,"Y",2005,"D032_Belize2005.pdf",,"D032_Belize2005.pdf",
+"D033","NPOA","Chile","draft",,"Y",2006,"D033_Chile2006.pdf",,"D033_Chile2006.pdf",
+"D034","NPOA","Colombia",,,"Y",2010,"D034_Colombia2010.pdf",,"D034_Colombia2010.pdf",
+"D035","NPOA","Ecuador",,,"Y",2005,"D035_Ecuador2005.pdf",,"D035_Ecuador2005.pdf",
+"D036","NPOA","Gambia","draft",,"Y",,"D036_Gambia.pdf",,"D036_Gambia.pdf","no info. about year"
+"D037","NPOA","Guatemala","draft",,"Y",2008,"D037_Guatemala2008.pdf",,"D037_Guatemala2008.pdf","Guatemala de la Asunción"
+"D038","NPOA","Guinea-Bissau","adopted",,"Y",2007,"D038_Guinea-Bissau2007.pdf",,"D038_Guinea-Bissau2007.pdf",
+"D039","NPOA","Philippines","adopted",,"Y",2009,"D039_Philippines2009.pdf",,"D039_Philippines2009.pdf",
+"D040","NPOA","Seychelles","adopted",,"Y",2007,"D040_Seychelles2007.pdf",,"D040_Seychelles2007.pdf",
+"D041","NPOA","Uruguay",,,"Y",2008,"D041_Uruguay2008.pdf",,"D041_Uruguay2008.pdf",
+"D042","NPOA","Costa Rica","draft",,"Y",2005,"D042_CostaRica2005.pdf",,"D042_CostaRica2005.pdf",
+"D043","NPOA","Costa Rica","adopted",,"Y",2010,"D043_CostaRica2010.pdf",,"D043_CostaRica2010.pdf",
+"D044","NPOA","Cabo Verde","draft",,"Y",2005,"D044_CaboVerde2005.pdf",,"D044_CaboVerde2005.pdf",
+"D045","NPOA","South Africa","adopted",,"Y",2013,"D045_SouthAfrica2013.pdf",,"D045_SouthAfrica2013.pdf",
+"D046","NPOA","Bangladesh","in progress",,"N",,,,,
+"D047","NPOA","Maldives","draft",,"Y",2014,"D051_Maldives2014.pdf",,"D051_Maldives2014.pdf","nonofficial"
+"D048","NPOA","Myanmar","draft",,"Y",2005,"D052_Myanmar2005.pdf",,"D052_Myanmar2005.pdf","5 pages"
+"D049","NPOA","Vanuatu",,,,,,,,
+"D050","RPOA",,"adopted",,"Y",2003,"Action Plan for the Conservation of Cartilaginous Fishes (Chondrichthyans) in the Mediterranean Sea",,,
+"D051","RPOA",,,,"Y",2008,"Plan de Acción Regional para la Conservación de Tiburones, Rayas y Quimeras en el Pacífico Sudeste",,,
+"D052","RPOA",,,,"Y",2009,"Pacific Islands - Regional Plan of Action for Sharks",,,
+"D053","RPOA",,"draft",,"Y",,"The CSRP and International Foundation for the Ban d’Arguin subregional Plan of Action",,,
+"D054","NPOA","Australia",,,"Y",,,,,
+"D055","report","Bangladesh",,,"Y",,,,,"nonofficial"
+"D056","NPOA","Malaysia",,,"Y",2014,,,,
+"D057","NPOA","Mauritania",,,,,,,,
+"D058","report","United States of America",,,"Y",,,,,
+"D059","report","Canada",,,,,,,,
