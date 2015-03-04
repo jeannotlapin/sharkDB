@@ -203,7 +203,7 @@ function ready(error, results) {
 	console.log("country Info  List "); console.log(countryInfoList);
 	/* create dropdown from keys of the lists */
 	var dropdownInnerHTML = '';
-	Object.keys(countryList).sort(function (a,b) {if (countryInfoList[a].name < countryInfoList[b].name) return -1; return 1;}).forEach(function(d) {dropdownInnerHTML = dropdownInnerHTML + "<li onclick='displayCountry(\""+(+d)+"\")'><a href='#'>"+countryInfoList[d].name+"</a></li>";});
+	Object.keys(countryList).sort(function (a,b) {if (countryInfoList[a].name < countryInfoList[b].name) return -1; return 1;}).forEach(function(d) {dropdownInnerHTML = dropdownInnerHTML + "<li onclick='displayCountry("+(+d)+")'><a href='#'>"+countryInfoList[d].name+"</a></li>";});
 	document.getElementById("countryDropdown").innerHTML = dropdownInnerHTML;
 	dropdownInnerHTML = '';
 	Object.keys(speciesList).sort().forEach(function(d) {dropdownInnerHTML = dropdownInnerHTML + "<li onclick='displaySpecies(\""+d+"\")'><a href='#'>"+d+"</a></li>";});
