@@ -21,9 +21,26 @@
     <![endif]-->
     <script src="http://d3js.org/queue.v1.min.js"></script>
     <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://underscorejs.org/underscore-min.js"></script>
     <style>
 	.tableHeader {
 		background-color : #3db5d8;
+	}
+	.dropdown-menu li a {
+		padding: 2px 13px;
+	}
+	.activeCountry {
+		background-color : #edf5fe;
+	}
+	.activeCountry:hover {
+		background-color : #e7f0f8;
+		cursor:grab;
+	}
+	.list-group-item {
+		padding: 5px 12px;
+	}
+	.list-group-item:first-child {
+		border-top-right-radius: 9px;
 	}
     </style>
 </head>
@@ -96,23 +113,57 @@ var countryInfoList = new Array();
 queue(2)
 	.defer(d3.csv, "data/countryList.csv", function (d) {
 			if (+d.isonumcode != 0 && !isNaN(d.isonumcode)) { /* skip invalid country code */
-				if (!(+d.isonumcode in countryList)) countryList[+d.isonumcode] = new Array();
-				countryList[+d.isonumcode].push({type: d.type, title: d.title, description: d.description, url: d.symbol, year: d.year});
+				if (!(+d.isonumcode in countryList)) {
+					countryList[+d.isonumcode] = new Array();
+				}
+				countryList[+d.isonumcode].push({
+					type: d.type,
+					title: d.title,
+					description: d.description,
+					url: d.symbol,
+					year: d.year
+					});
 				}
 			}
 	      )
 	.defer(d3.csv, "data/RFMOList.csv", function (d) {
 			/* populate RFMOList */
-			if (!(d.RFMO in RFMOList)) RFMOList[d.RFMO] = new Array();
-			RFMOList[d.RFMO].push({type: d.type, measure: d.measure, species: d.species, title: d.title, description: d.description, url: d.symbol, year: d.year});
+			if (!(d.RFMO in RFMOList)) {
+				RFMOList[d.RFMO] = new Array();
+			}
+			RFMOList[d.RFMO].push({
+				type: d.type,
+				measure: d.measure,
+				species: d.species,
+				title: d.title,
+				description: d.description,
+				url: d.symbol,
+				year: d.year
+				});
+
 			/* populate SpeciesList */
-			if (!(d.species in speciesList)) speciesList[d.species] = new Array();
-			speciesList[d.species].push({type: d.type, measure: d.measure, RFMO: d.RFMO, title: d.title, description: d.description, url: d.symbol, year: d.year});
+			if (!(d.species in speciesList)) {
+				speciesList[d.species] = new Array();
+			}
+			speciesList[d.species].push({
+				type: d.type,
+				measure: d.measure,
+				RFMO: d.RFMO,
+				title: d.title,
+				description: d.description,
+				url: d.symbol,
+				year: d.year
+				});
 			}
 	      )
 	.defer(d3.csv, "data/countryMembership.csv", function (d) {
 			if (+d.isonumcode != 0 && !isNaN(d.isonumcode)) { /* skip invalid country code */
-				countryInfoList[+d.isonumcode] = {name: d.name, iso2: d.isocode2, iso3: d.isocode3, rfmo: d.RFMO.split(',')};
+				countryInfoList[+d.isonumcode] = {
+					name: d.name,
+					iso2: d.isocode2,
+					iso3: d.isocode3,
+					rfmo: d.RFMO.split(',')
+					};
 				}
 			}
 	      )
@@ -130,22 +181,30 @@ function displayCountry(country) {
 
 	$('#mainContainer').hide();
 	/* set selector head to current value and reset other selectors */
-	document.getElementById("currentCountry").textContent = countryInfoList[country].name;
-	document.getElementById("currentSpecies").textContent = "Species";
-	document.getElementById("currentRFMO").textContent = "RFMO";
+
+	$('#currentCountry').text(countryInfoList[country].name);
+	$('#currentSpecies').text("Species");
+	$('#currentRFMO').text("RFMO");
 
 	/* display document list */
-	var tableInnerHTML = '<thead><tr class="tableHeader"><th>Type</th><th>Title</th><th>Description</th><th>Year</th><th>link</th></tr></thead><tbody>';
-	countryList[country].sort(yearSort).forEach(function(d){ tableInnerHTML = tableInnerHTML + "<tr><td>"+d.type+"</td><td>"+d.title+"</td><td>"+d.description+"</td><td>"+d.year+"</td><td>"+d.url+"</td></tr>";});
-	tableInnerHTML = tableInnerHTML + "</tbody>";
-	document.getElementById("displayTable").innerHTML = tableInnerHTML;
-	document.getElementById("displayTitle").textContent = countryInfoList[country].name;
+	$('#displayTable').html('<thead><tr class="tableHeader"><th>Type</th><th>Title</th><th>Description</th><th>Year</th><th>link</th></tr></thead><tbody></tbody>');
+
+	var template = _.template("<tr><td><%= type %></td><td><%= title %></td><td><%= description %></td><td><%= year %></td><td><%= url %></td></tr>");
+
+	var tbodyElement = $('#displayTable:last-child');
+	countryList[country].sort(yearSort).forEach(function(d){
+			tbodyElement.append(template(d));
+			});
+
+	$('#displayTitle').text(countryInfoList[country].name);
 
 	/* get the country membership */
-	document.getElementById("sidePanelTitle").textContent = "Member of";
-	var sidePanelInnerHTML = '';
-	countryInfoList[country].rfmo.forEach(function(d){sidePanelInnerHTML = sidePanelInnerHTML + "<div>"+d+"</div>"});
-	document.getElementById("sidePanelBody").innerHTML = sidePanelInnerHTML;
+	$('#sidePanelTitle').text("Member of");
+	var sidePanelInnerHTML = '<ul class="list-group">';
+	countryInfoList[country].rfmo.forEach(function(d){
+			sidePanelInnerHTML += "<li class='list-group-item activeCountry' onclick='displayRFMO(\""+d+"\")'>"+d+"</li>";
+			});
+	$('#sidePanelBody').html(sidePanelInnerHTML + "</ul>");
 
 	$('#mainContainer').show();
 }
@@ -154,43 +213,61 @@ function displaySpecies(species) {
 
 	$('#mainContainer').hide();
 	/* set selector head to current value and reset other selectors */
-	document.getElementById("currentCountry").textContent = "Country";
-	document.getElementById("currentSpecies").textContent = species;
-	document.getElementById("currentRFMO").textContent = "RFMO";
+	$('#currentCountry').text("Countries");
+	$('#currentSpecies').text(species);
+	$('#currentRFMO').text("RFMO");
 
 	/* display document list */
-	var tableInnerHTML = '<thead><tr class="tableHeader"><th>Type</th><th>Title</th><th>Description</th><th>Year</th><th>link</th></tr></thead><tbody>';
-	speciesList[species].sort(yearSort).forEach(function(d){ tableInnerHTML = tableInnerHTML + "<tr><td>"+d.type+"</td><td>"+d.title+"</td><td>"+d.description+"</td><td>"+d.year+"</td><td>"+d.url+"</td></tr>";});
-	tableInnerHTML = tableInnerHTML + "</tbody>";
-	document.getElementById("displayTable").innerHTML = tableInnerHTML;
-	document.getElementById("displayTitle").textContent = species;
-	$('#mainContainer').show();
+	$('#displayTable').html('<thead><tr class="tableHeader"><th>Type</th><th>Title</th><th>Description</th><th>Year</th><th>link</th></tr></thead><tbody></tbody>');
 
-	/* get fish information */
-	document.getElementById("sidePanelTitle").textContent = "Distribution";
-	document.getElementById("sidePanelBody").innerHTML = "<div>Insert here map of distribution</div>";
+	var template = _.template("<tr><td><%= type %></td><td><%= title %></td><td><%= description %></td><td><%= year %></td><td><%= url %></td></tr>");
+
+	var tbodyElement = $('#displayTable:last-child');
+	speciesList[species].sort(yearSort).forEach(function(d){
+			tbodyElement.append(template(d));
+			});
+
+	$('#displayTitle').text(species);
+
+	/* get fish information : TODO */
+	$('#sidePanelTitle').text("Distribution");
+	$('#sidePanelBody').html("<div>Insert here map of distribution</div>");
+
+	$('#mainContainer').show();
 }
 
 function displayRFMO(RFMO) {
 
 	$('#mainContainer').hide();
 	/* set selector head to current value and reset other selectors */
-	document.getElementById("currentCountry").textContent = "Country";
-	document.getElementById("currentSpecies").textContent = "Species";
-	document.getElementById("currentRFMO").textContent = RFMO;
+	$('#currentCountry').text("Countries");
+	$('#currentSpecies').text("Species");
+	$('#currentRFMO').text(RFMO);
 
 	/* display document list */
-	var tableInnerHTML = '<thead><tr class="tableHeader"><th>Type</th><th>Title</th><th>Description</th><th>Year</th><th>link</th></tr></thead><tbody>';
-	RFMOList[RFMO].sort(yearSort).forEach(function(d){ tableInnerHTML = tableInnerHTML + "<tr><td>"+d.type+"</td><td>"+d.title+"</td><td>"+d.description+"</td><td>"+d.year+"</td><td>"+d.url+"</td></tr>";});
-	tableInnerHTML = tableInnerHTML + "</tbody>";
-	document.getElementById("displayTable").innerHTML = tableInnerHTML;
-	document.getElementById("displayTitle").textContent = RFMO;
+	$('#displayTable').html('<thead><tr class="tableHeader"><th>Type</th><th>Title</th><th>Description</th><th>Year</th><th>link</th></tr></thead><tbody></tbody>');
+
+	var template = _.template("<tr><td><%= type %></td><td><%= title %></td><td><%= description %></td><td><%= year %></td><td><%= url %></td></tr>");
+	var tbodyElement = $('#displayTable:last-child');
+	RFMOList[RFMO].sort(yearSort).forEach(function (d){
+			tbodyElement.append(template(d));
+			});
+	$('#displayTitle').text(RFMO);
 
 	/* get members */
-	document.getElementById("sidePanelTitle").textContent = "Members";
-	var sidePanelInnerHTML = '';
-	countryInfoList.sort(function (a,b) { if (a.name<b.name) return -1; return 1}).forEach(function(d){if ($.inArray(RFMO, d.rfmo) != -1) {sidePanelInnerHTML = sidePanelInnerHTML + "<div>"+d.name+"</div>"}});
-	document.getElementById("sidePanelBody").innerHTML = sidePanelInnerHTML;
+	$('#sidePanelTitle').text("Members");
+	var sidePanelInnerHTML = '<ul class="list-group">';
+	var memberList = new Array(); /* extract member list : {name: , isonumcode: }*/
+	countryInfoList.forEach(function(d,k){if ($.inArray(RFMO, d.rfmo) != -1) {memberList.push({name : d.name, isonumcode:k});}});
+
+	memberList.sort(function(a,b){if (a.name<b.name) return -1; return 1;}).forEach(function (d){
+			sidePanelInnerHTML += "<li class='list-group-item";
+			if ((+d.isonumcode in countryList)) { /* add link to country if it has some docs */
+				sidePanelInnerHTML += " activeCountry' onclick='displayCountry("+d.isonumcode+")";
+				}
+			sidePanelInnerHTML = sidePanelInnerHTML + "'>"+d.name+"</li>";
+			});
+	$('#sidePanelBody').html(sidePanelInnerHTML);
 
 	$('#mainContainer').show();
 }
@@ -202,15 +279,21 @@ function ready(error, results) {
 	console.log("species List "); console.log(speciesList);
 	console.log("country Info  List "); console.log(countryInfoList);
 	/* create dropdown from keys of the lists */
-	var dropdownInnerHTML = '';
-	Object.keys(countryList).sort(function (a,b) {if (countryInfoList[a].name < countryInfoList[b].name) return -1; return 1;}).forEach(function(d) {dropdownInnerHTML = dropdownInnerHTML + "<li onclick='displayCountry("+(+d)+")'><a href='#'>"+countryInfoList[d].name+"</a></li>";});
-	document.getElementById("countryDropdown").innerHTML = dropdownInnerHTML;
-	dropdownInnerHTML = '';
-	Object.keys(speciesList).sort().forEach(function(d) {dropdownInnerHTML = dropdownInnerHTML + "<li onclick='displaySpecies(\""+d+"\")'><a href='#'>"+d+"</a></li>";});
-	document.getElementById("speciesDropdown").innerHTML = dropdownInnerHTML;
-	dropdownInnerHTML = '';
-	Object.keys(RFMOList).sort().forEach(function(d) {dropdownInnerHTML = dropdownInnerHTML + "<li onclick='displayRFMO(\""+d+"\")'><a href='#'>"+d+"</a></li>";});
-	document.getElementById("RFMODropdown").innerHTML = dropdownInnerHTML;
+	Object.keys(countryList).sort(function (a,b) { /* sort the country by alphabetical order on name retrieved in the countryInfoList */
+			if (countryInfoList[a].name < countryInfoList[b].name) {
+			return -1;}
+			return 1;})
+		.forEach(function(d) {
+			$('#countryDropdown').append("<li onclick='displayCountry("+(+d)+")'><a href='#'>"+countryInfoList[d].name+"</a></li>");
+			});
+
+	Object.keys(speciesList).sort().forEach(function(d) {
+			$('#speciesDropdown').append("<li onclick='displaySpecies(\""+d+"\")'><a href='#'>"+d+"</a></li>");
+			});
+
+	Object.keys(RFMOList).sort().forEach(function(d) {
+			$('#RFMODropdown').append("<li onclick='displayRFMO(\""+d+"\")'><a href='#'>"+d+"</a></li>");
+			});
 }
 
 </script>
