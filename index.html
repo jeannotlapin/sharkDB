@@ -84,12 +84,11 @@
 	  <div class="bs-doc-section">
 		  <div class="row">
 			  <div class="col-lg-9">
-				  <div class="panel panel-info">
-					  <table class="table table-striped table-hover" id="displayTable"></table>
+				  <div class="panel panel-info" id="centralPanel">
 				  </div>
 			  </div>
 			  <div class="col-lg-3">
-				  <div class="panel panel-info">
+				  <div class="panel panel-info" id="sidePanel">
 					<div class="panel-heading"><h3 class="panel-title" id="sidePanelTitle"></h3></div>
 					<div class="panel-body" id="sidePanelBody"></div>
 				  </div>
@@ -105,6 +104,79 @@
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="assets/js/ie10-viewport-bug-workaround.js"></script>
 </body>
+<script type="text/template" id="countrySelectedDocuments">
+	<table class="table table-striped table-hover">
+	<thead>
+		<tr class="tableHeader">
+			<th>Type</th>
+			<th>Title</th>
+			<th>Description</th>
+			<th>Year</th>
+			<th>link</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% _.each(dataArray, function(d){ %>
+		<tr>
+			<td><%= d.type %></td>
+			<td><%= d.title %></td>
+			<td><%= d.description %></td>
+			<td><%= d.year %></td>
+			<td><%= d.url %></td>
+		</tr>
+		<% });%>
+	</tbody>
+	</table>
+</script>
+<script type="text/template" id="speciesSelectedDocuments">
+	<table class="table table-striped table-hover">
+	<thead>
+		<tr class="tableHeader">
+			<th>Type</th>
+			<th>Title</th>
+			<th>Description</th>
+			<th>Year</th>
+			<th>link</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% _.each(dataArray, function(d){ %>
+		<tr>
+			<td><%= d.type %></td>
+			<td><%= d.title %></td>
+			<td><%= d.description %></td>
+			<td><%= d.year %></td>
+			<td><%= d.url %></td>
+		</tr>
+		<% });%>
+	</tbody>
+	</table>
+</script>
+<script type="text/template" id="rfmoSelectedDocuments">
+	<table class="table table-striped table-hover">
+	<thead>
+		<tr class="tableHeader">
+			<th>Type</th>
+			<th>Title</th>
+			<th>Description</th>
+			<th>Year</th>
+			<th>link</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% _.each(dataArray, function(d){ %>
+		<tr>
+			<td><%= d.type %></td>
+			<td><%= d.title %></td>
+			<td><%= d.description %></td>
+			<td><%= d.year %></td>
+			<td><%= d.url %></td>
+		</tr>
+		<% });%>
+	</tbody>
+	</table>
+</script>
+
 <script>
 var stateModel = Backbone.Model.extend({
 	/* state has 3 variables: country, species and rfmo. Only one shall be != '' */
@@ -118,8 +190,6 @@ var stateModel = Backbone.Model.extend({
 var currentState = new stateModel();
 
 var currentSelectorView = Backbone.View.extend({
-		tagname : 'ul',
-
 		initialize: function (options) {
     			this.options = options || {};
 			this.listenTo(this.model, 'change', this.render);
@@ -130,13 +200,47 @@ var currentSelectorView = Backbone.View.extend({
 			this.$('#currentCountry').html((this.model.get('country')=='')?'Country':countryInfoList[this.model.get('country')].name);
 			this.$('#currentSpecies').html((this.model.get('species')=='')?'Species':this.model.get('species'));
 			this.$('#currentRFMO').html((this.model.get('rfmo')=='')?'RFMO':this.model.get('rfmo'));
+
+			/* title reflects the selection */
+			$('#displayTitle').text((this.model.get('country')!='')?countryInfoList[this.model.get('country')].name:((this.model.get('species')!='')?this.model.get('species'):this.model.get('rfmo')));
 			return this;
 		}
 
 });
 
-var countrySelector = new currentSelectorView({model: currentState, el: $('#navSelector')});
+var currentSelector = new currentSelectorView({model: currentState, el: $('#navSelector')});
 
+
+var currentCentralPanelView = Backbone.View.extend({
+		el : '#centralPanel',
+
+		initialize: function (options) {
+			this.options = options || {};
+			this.listenTo(this.model, 'change', this.render);
+		},
+		countryTemplate : _.template($('#countrySelectedDocuments').html()),
+		speciesTemplate : _.template($('#speciesSelectedDocuments').html()),
+		rfmoTemplate : _.template($('#rfmoSelectedDocuments').html()),
+
+		render : function () {
+			if (this.model.get('country')!='') {
+				/* render country table  */
+				this.$el.html(this.countryTemplate({dataArray: countryList[this.model.get('country')].sort(yearSort)}));
+			}
+			if (this.model.get('species')!='') {
+				/* render species table  */
+				this.$el.html(this.speciesTemplate({dataArray: speciesList[this.model.get('species')].sort(yearSort)}));
+			}
+			if (this.model.get('rfmo')!='') {
+				/* render species table  */
+				this.$el.html(this.rfmoTemplate({dataArray: RFMOList[this.model.get('rfmo')].sort(yearSort)}));
+			}
+			return this;
+		}
+});
+var currentMainContainer = new currentCentralPanelView({model: currentState});
+
+/* global arrays to store the parsed CVS data sets */
 var countryList = new Array();
 var speciesList = new Object();
 var RFMOList = new Object();
@@ -215,19 +319,8 @@ function displayCountry(country) {
 	/* update status model to reflect current selection */
 	currentState.set({country: country, species: '', rfmo: ''});
 
-	/* display document list */
-	$('#displayTable').html('<thead><tr class="tableHeader"><th>Type</th><th>Title</th><th>Description</th><th>Year</th><th>link</th></tr></thead><tbody></tbody>');
-
-	var template = _.template("<tr><td><%= type %></td><td><%= title %></td><td><%= description %></td><td><%= year %></td><td><%= url %></td></tr>");
-
-	var tbodyElement = $('#displayTable:last-child');
-	countryList[country].sort(yearSort).forEach(function(d){
-			tbodyElement.append(template(d));
-			});
-
-	$('#displayTitle').text(countryInfoList[country].name);
-
 	/* get the country membership */
+
 	$('#sidePanelTitle').text("Member of");
 	var sidePanelInnerHTML = '<ul class="list-group">';
 	countryInfoList[country].rfmo.forEach(function(d){
@@ -244,18 +337,6 @@ function displaySpecies(species) {
 	/* update status model to reflect current selection */
 	currentState.set({country: '', species: species, rfmo: ''});
 
-	/* display document list */
-	$('#displayTable').html('<thead><tr class="tableHeader"><th>Type</th><th>Title</th><th>Description</th><th>Year</th><th>link</th></tr></thead><tbody></tbody>');
-
-	var template = _.template("<tr><td><%= type %></td><td><%= title %></td><td><%= description %></td><td><%= year %></td><td><%= url %></td></tr>");
-
-	var tbodyElement = $('#displayTable:last-child');
-	speciesList[species].sort(yearSort).forEach(function(d){
-			tbodyElement.append(template(d));
-			});
-
-	$('#displayTitle').text(species);
-
 	/* get fish information : TODO */
 	$('#sidePanelTitle').text("Distribution");
 	$('#sidePanelBody').html("<div>Insert here map of distribution</div>");
@@ -268,16 +349,6 @@ function displayRFMO(RFMO) {
 	$('#mainContainer').hide();
 	/* update status model to reflect current selection */
 	currentState.set({country: '', species: '', rfmo: RFMO});
-
-	/* display document list */
-	$('#displayTable').html('<thead><tr class="tableHeader"><th>Type</th><th>Title</th><th>Description</th><th>Year</th><th>link</th></tr></thead><tbody></tbody>');
-
-	var template = _.template("<tr><td><%= type %></td><td><%= title %></td><td><%= description %></td><td><%= year %></td><td><%= url %></td></tr>");
-	var tbodyElement = $('#displayTable:last-child');
-	RFMOList[RFMO].sort(yearSort).forEach(function (d){
-			tbodyElement.append(template(d));
-			});
-	$('#displayTitle').text(RFMO);
 
 	/* get members */
 	$('#sidePanelTitle').text("Members");
