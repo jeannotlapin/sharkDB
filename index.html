@@ -21,7 +21,9 @@
     <![endif]-->
     <script src="http://d3js.org/queue.v1.min.js"></script>
     <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="http://underscorejs.org/underscore-min.js"></script>
+    <script src="http://backbonejs.org/backbone-min.js"></script>
     <style>
 	.tableHeader {
 		background-color : #3db5d8;
@@ -60,7 +62,7 @@
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
+      <ul id="navSelector" class="nav navbar-nav">
         <li class="dropdown">
 	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentCountry">Countries</span><span class="caret"></span></a>
 	<ul class="dropdown-menu" role="menu" id="countryDropdown"></ul>
@@ -99,12 +101,42 @@
    <!-- Bootstrap core JavaScript
    ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="dist/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="assets/js/ie10-viewport-bug-workaround.js"></script>
 </body>
 <script>
+var stateModel = Backbone.Model.extend({
+	/* state has 3 variables: country, species and rfmo. Only one shall be != '' */
+	defaults: {
+		country: '',
+		species : '',
+		rfmo : ''
+	}
+});
+
+var currentState = new stateModel();
+
+var currentSelectorView = Backbone.View.extend({
+		tagname : 'ul',
+
+		initialize: function (options) {
+    			this.options = options || {};
+			this.listenTo(this.model, 'change', this.render);
+		},
+
+		render : function() {
+			/* get sub-elements country/species/rfmo and set their content */
+			this.$('#currentCountry').html((this.model.get('country')=='')?'Country':countryInfoList[this.model.get('country')].name);
+			this.$('#currentSpecies').html((this.model.get('species')=='')?'Species':this.model.get('species'));
+			this.$('#currentRFMO').html((this.model.get('rfmo')=='')?'RFMO':this.model.get('rfmo'));
+			return this;
+		}
+
+});
+
+var countrySelector = new currentSelectorView({model: currentState, el: $('#navSelector')});
+
 var countryList = new Array();
 var speciesList = new Object();
 var RFMOList = new Object();
@@ -180,11 +212,8 @@ function yearSort(a,b) {
 function displayCountry(country) {
 
 	$('#mainContainer').hide();
-	/* set selector head to current value and reset other selectors */
-
-	$('#currentCountry').text(countryInfoList[country].name);
-	$('#currentSpecies').text("Species");
-	$('#currentRFMO').text("RFMO");
+	/* update status model to reflect current selection */
+	currentState.set({country: country, species: '', rfmo: ''});
 
 	/* display document list */
 	$('#displayTable').html('<thead><tr class="tableHeader"><th>Type</th><th>Title</th><th>Description</th><th>Year</th><th>link</th></tr></thead><tbody></tbody>');
@@ -212,10 +241,8 @@ function displayCountry(country) {
 function displaySpecies(species) {
 
 	$('#mainContainer').hide();
-	/* set selector head to current value and reset other selectors */
-	$('#currentCountry').text("Countries");
-	$('#currentSpecies').text(species);
-	$('#currentRFMO').text("RFMO");
+	/* update status model to reflect current selection */
+	currentState.set({country: '', species: species, rfmo: ''});
 
 	/* display document list */
 	$('#displayTable').html('<thead><tr class="tableHeader"><th>Type</th><th>Title</th><th>Description</th><th>Year</th><th>link</th></tr></thead><tbody></tbody>');
@@ -239,10 +266,8 @@ function displaySpecies(species) {
 function displayRFMO(RFMO) {
 
 	$('#mainContainer').hide();
-	/* set selector head to current value and reset other selectors */
-	$('#currentCountry').text("Countries");
-	$('#currentSpecies').text("Species");
-	$('#currentRFMO').text(RFMO);
+	/* update status model to reflect current selection */
+	currentState.set({country: '', species: '', rfmo: RFMO});
 
 	/* display document list */
 	$('#displayTable').html('<thead><tr class="tableHeader"><th>Type</th><th>Title</th><th>Description</th><th>Year</th><th>link</th></tr></thead><tbody></tbody>');
