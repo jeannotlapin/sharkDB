@@ -31,10 +31,10 @@
 	.dropdown-menu li a {
 		padding: 2px 13px;
 	}
-	.activeCountry {
+	.activeCountry, .activeRFMO{
 		background-color : #edf5fe;
 	}
-	.activeCountry:hover {
+	.activeCountry:hover, .activeRFMO:hover{
 		background-color : #e7f0f8;
 		cursor:grab;
 	}
@@ -64,7 +64,7 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul id="navSelector" class="nav navbar-nav">
         <li class="dropdown">
-	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentCountry">Countries</span><span class="caret"></span></a>
+	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentCountry">Country</span><span class="caret"></span></a>
 	<ul class="dropdown-menu" role="menu" id="countryDropdown"></ul>
         </li>
         <li class="dropdown">
@@ -79,16 +79,16 @@
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container -->
   </nav>
-  <div class="container" id="mainContainer" style="display:none;">
+  <div class="container" id="mainContainer">
 	  <h1 id="displayTitle"></h1>
 	  <div class="bs-doc-section">
 		  <div class="row">
 			  <div class="col-lg-9">
-				  <div class="panel panel-info" id="centralPanel">
+				  <div class="panel panel-info" id="centralPanel" style='display:none;'>
 				  </div>
 			  </div>
 			  <div class="col-lg-3">
-				  <div class="panel panel-info" id="sidePanel">
+				  <div class="panel panel-info" id="sidePanel" style='display:none;'>
 				  </div>
 			  </div>
 		  </div>
@@ -109,7 +109,7 @@
 	<div class="panel-body">
 		<ul class="list-group">
 		<% _.each(dataArray, function (d) { %>
-			<li class='list-group-item activeCountry' onclick='displayRFMO("<%= d %>")'><%= d %></li>
+			<li class='list-group-item activeRFMO' data-rfmo='<%= d %>'><%= d %></li>
 		<% }); %>
 		</ul>
 	</div>
@@ -129,7 +129,7 @@
 	<div class="panel-body">
 		<ul class="list-group">
 		<% _.each(dataArray, function (d) { %>
-			<li class='list-group-item <%= ((d.link==1)?"activeCountry' onclick='displayCountry("+d.isonumcode+")'":"'") %> ><%= countryInfoList[d.isonumcode].name %></li>
+			<li class='list-group-item <%= ((d.link==1)?"activeCountry' data-countryid='"+d.isonumcode+"'":"'") %> ><%= countryInfoList[d.isonumcode].name %></li>
 		<% }); %>
 		</ul>
 	</div>
@@ -213,6 +213,10 @@
 	</table>
 </script>
 
+<script type="text/template" id="selectorDropdown">
+	<li><a href='#' class='ddpick' data-<%= type %>="<%= data %>"><%= name %></a></li>
+</script>
+
 <script>
 var stateModel = Backbone.Model.extend({
 	/* state has 3 variables: country, species and rfmo. Only one shall be != '' */
@@ -226,9 +230,30 @@ var stateModel = Backbone.Model.extend({
 var currentState = new stateModel();
 
 var currentSelectorView = Backbone.View.extend({
+		el : '#navSelector',
+
+		events : {
+			"click a.ddpick" : "updateCurrentState"
+		},
+
 		initialize: function (options) {
     			this.options = options || {};
 			this.listenTo(this.model, 'change', this.render);
+
+			var ddTemplate = _.template($('#selectorDropdown').html());
+
+			Object.keys(countryList).sort(function (a,b) { /* sort the country by alphabetical order on name retrieved in the countryInfoList */
+				return ((countryInfoList[a].name < countryInfoList[b].name)?-1:1);})
+				.forEach(function (d) {this.$('#countryDropdown').append(ddTemplate({type:'country', data:+d, name:countryInfoList[d].name}));
+				});
+
+			Object.keys(speciesList).sort().forEach(function(d) {
+				this.$('#speciesDropdown').append(ddTemplate({type:'species', data:d, name:d}));
+				});
+
+			Object.keys(RFMOList).sort().forEach(function(d) {
+				this.$('#RFMODropdown').append(ddTemplate({type:'rfmo', data:d, name:d}));
+				});
 		},
 
 		render : function() {
@@ -240,11 +265,16 @@ var currentSelectorView = Backbone.View.extend({
 			/* title reflects the selection */
 			$('#displayTitle').text((this.model.get('country')!='')?countryInfoList[this.model.get('country')].name:((this.model.get('species')!='')?this.model.get('species'):this.model.get('rfmo')));
 			return this;
+		},
+
+		updateCurrentState : function (e) {
+			this.model.set({country: ('country' in e.target.dataset)?e.target.dataset.country:'',
+					rfmo: ('rfmo' in e.target.dataset)?e.target.dataset.rfmo:'',
+					species: ('species' in e.target.dataset)?e.target.dataset.species:''});
 		}
 
 });
 
-var currentSelector = new currentSelectorView({model: currentState, el: $('#navSelector')});
 
 
 var currentCentralPanelView = Backbone.View.extend({
@@ -259,6 +289,7 @@ var currentCentralPanelView = Backbone.View.extend({
 		rfmoTemplate : _.template($('#rfmoSelectedDocuments').html()),
 
 		render : function () {
+			this.$el.hide();
 			if (this.model.get('country')!='') {
 				/* render country table  */
 				this.$el.html(this.countryTemplate({dataArray: countryList[this.model.get('country')].sort(yearSort)}));
@@ -271,6 +302,7 @@ var currentCentralPanelView = Backbone.View.extend({
 				/* render rfmo table  */
 				this.$el.html(this.rfmoTemplate({dataArray: RFMOList[this.model.get('rfmo')].sort(yearSort)}));
 			}
+			this.$el.show();
 			return this;
 		}
 });
@@ -283,14 +315,25 @@ var currentSidePanelView = Backbone.View.extend({
 			this.options = options || {};
 			this.listenTo(this.model, 'change', this.render);
 		},
+
+		events : {
+			"click li.activeCountry" : "toCountryView",
+			"click li.activeRFMO" : "toRFMOView"
+		},
+
 		countryTemplate : _.template($('#countrySidePanel').html()),
 		speciesTemplate : _.template($('#speciesSidePanel').html()),
 		rfmoTemplate : _.template($('#rfmoSidePanel').html()),
 
 		render : function () {
+			this.$el.hide();
 			if (this.model.get('country')!='') {
 				/* render country membership  */
-				this.$el.html(this.countryTemplate({title: 'Member of', dataArray: countryInfoList[this.model.get('country')].rfmo}));
+				if (countryInfoList[this.model.get('country')].rfmo.size==0) {
+					this.$el.html('<div class="panel-heading"><h3 class="panel-title">Member of</h3></div>');
+				} else {
+					this.$el.html(this.countryTemplate({title: 'Member of', dataArray: countryInfoList[this.model.get('country')].rfmo}));
+				}
 			}
 			if (this.model.get('species')!='') {
 				/* render species distribution  */
@@ -306,7 +349,16 @@ var currentSidePanelView = Backbone.View.extend({
 						}});
 				this.$el.html(this.rfmoTemplate({title: 'Members', dataArray: memberList.sort(function(a,b){return (a.name<b.name)?-1:1})}));
 			}
+			this.$el.show();
 			return this;
+		},
+
+		toCountryView : function (e) {
+			this.model.set({country: e.target.dataset.countryid, rfmo: '', species: ''});
+		},
+
+		toRFMOView : function (e) {
+			this.model.set({rfmo: e.target.dataset.rfmo, country: '', species: ''});
 		}
 });
 var currentSidePanel = new currentSidePanelView({model: currentState});
@@ -369,7 +421,7 @@ queue(2)
 					name: d.name,
 					iso2: d.isocode2,
 					iso3: d.isocode3,
-					rfmo: d.RFMO.split(',')
+					rfmo: (d.RFMO=='')?new Array():d.RFMO.split(',')
 					};
 				}
 			}
@@ -384,55 +436,13 @@ function yearSort(a,b) {
 	 return -1;
 }
 
-function displayCountry(country) {
-
-	$('#mainContainer').hide();
-	/* update status model to reflect current selection */
-	currentState.set({country: country, species: '', rfmo: ''});
-
-	$('#mainContainer').show();
-}
-
-function displaySpecies(species) {
-
-	$('#mainContainer').hide();
-	/* update status model to reflect current selection */
-	currentState.set({country: '', species: species, rfmo: ''});
-
-	$('#mainContainer').show();
-}
-
-function displayRFMO(RFMO) {
-
-	$('#mainContainer').hide();
-	/* update status model to reflect current selection */
-	currentState.set({country: '', species: '', rfmo: RFMO});
-
-	$('#mainContainer').show();
-}
-
-
 function ready(error, results) {
 	console.log("country List "); console.log(countryList);
 	console.log("RFMO List "); console.log(RFMOList);
 	console.log("species List "); console.log(speciesList);
 	console.log("country Info  List "); console.log(countryInfoList);
-	/* create dropdown from keys of the lists */
-	Object.keys(countryList).sort(function (a,b) { /* sort the country by alphabetical order on name retrieved in the countryInfoList */
-			if (countryInfoList[a].name < countryInfoList[b].name) {
-			return -1;}
-			return 1;})
-		.forEach(function(d) {
-			$('#countryDropdown').append("<li onclick='displayCountry("+(+d)+")'><a href='#'>"+countryInfoList[d].name+"</a></li>");
-			});
-
-	Object.keys(speciesList).sort().forEach(function(d) {
-			$('#speciesDropdown').append("<li onclick='displaySpecies(\""+d+"\")'><a href='#'>"+d+"</a></li>");
-			});
-
-	Object.keys(RFMOList).sort().forEach(function(d) {
-			$('#RFMODropdown').append("<li onclick='displayRFMO(\""+d+"\")'><a href='#'>"+d+"</a></li>");
-			});
+	/* create dropdown from keys of the lists and selector display */
+	new currentSelectorView({model: currentState});
 }
 
 </script>
