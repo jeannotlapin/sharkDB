@@ -89,8 +89,6 @@
 			  </div>
 			  <div class="col-lg-3">
 				  <div class="panel panel-info" id="sidePanel">
-					<div class="panel-heading"><h3 class="panel-title" id="sidePanelTitle"></h3></div>
-					<div class="panel-body" id="sidePanelBody"></div>
 				  </div>
 			  </div>
 		  </div>
@@ -104,6 +102,40 @@
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="assets/js/ie10-viewport-bug-workaround.js"></script>
 </body>
+<script type="text/template" id="countrySidePanel">
+	<div class="panel-heading">
+		<h3 class="panel-title"><%= title %></h3>
+	</div>
+	<div class="panel-body">
+		<ul class="list-group">
+		<% _.each(dataArray, function (d) { %>
+			<li class='list-group-item activeCountry' onclick='displayRFMO("<%= d %>")'><%= d %></li>
+		<% }); %>
+		</ul>
+	</div>
+</script>
+
+<script type="text/template" id="speciesSidePanel">
+	<div class="panel-heading">
+		<h3 class="panel-title"><%= title %></h3>
+	</div>
+	<div class="panel-body"> Insert here map of distribution </div>
+</script>
+
+<script type="text/template" id="rfmoSidePanel">
+	<div class="panel-heading">
+		<h3 class="panel-title"><%= title %></h3>
+	</div>
+	<div class="panel-body">
+		<ul class="list-group">
+		<% _.each(dataArray, function (d) { %>
+			<li class='list-group-item <%= ((d.link==1)?"activeCountry' onclick='displayCountry("+d.isonumcode+")'":"'") %> ><%= countryInfoList[d.isonumcode].name %></li>
+		<% }); %>
+		</ul>
+	</div>
+</script>
+
+
 <script type="text/template" id="countrySelectedDocuments">
 	<table class="table table-striped table-hover">
 	<thead>
@@ -133,6 +165,7 @@
 	<thead>
 		<tr class="tableHeader">
 			<th>Type</th>
+			<th>RFMO</th>
 			<th>Title</th>
 			<th>Description</th>
 			<th>Year</th>
@@ -143,6 +176,7 @@
 		<% _.each(dataArray, function(d){ %>
 		<tr>
 			<td><%= d.type %></td>
+			<td><%= d.rfmo %></td>
 			<td><%= d.title %></td>
 			<td><%= d.description %></td>
 			<td><%= d.year %></td>
@@ -157,6 +191,7 @@
 	<thead>
 		<tr class="tableHeader">
 			<th>Type</th>
+			<th>Species</th>
 			<th>Title</th>
 			<th>Description</th>
 			<th>Year</th>
@@ -167,6 +202,7 @@
 		<% _.each(dataArray, function(d){ %>
 		<tr>
 			<td><%= d.type %></td>
+			<td><%= d.species %></td>
 			<td><%= d.title %></td>
 			<td><%= d.description %></td>
 			<td><%= d.year %></td>
@@ -232,13 +268,48 @@ var currentCentralPanelView = Backbone.View.extend({
 				this.$el.html(this.speciesTemplate({dataArray: speciesList[this.model.get('species')].sort(yearSort)}));
 			}
 			if (this.model.get('rfmo')!='') {
-				/* render species table  */
+				/* render rfmo table  */
 				this.$el.html(this.rfmoTemplate({dataArray: RFMOList[this.model.get('rfmo')].sort(yearSort)}));
 			}
 			return this;
 		}
 });
-var currentMainContainer = new currentCentralPanelView({model: currentState});
+var currentCentralPanel = new currentCentralPanelView({model: currentState});
+
+var currentSidePanelView = Backbone.View.extend({
+		el : '#sidePanel',
+
+		initialize: function (options) {
+			this.options = options || {};
+			this.listenTo(this.model, 'change', this.render);
+		},
+		countryTemplate : _.template($('#countrySidePanel').html()),
+		speciesTemplate : _.template($('#speciesSidePanel').html()),
+		rfmoTemplate : _.template($('#rfmoSidePanel').html()),
+
+		render : function () {
+			if (this.model.get('country')!='') {
+				/* render country membership  */
+				this.$el.html(this.countryTemplate({title: 'Member of', dataArray: countryInfoList[this.model.get('country')].rfmo}));
+			}
+			if (this.model.get('species')!='') {
+				/* render species distribution  */
+				this.$el.html(this.speciesTemplate({title: 'Distribution'}));
+			}
+			if (this.model.get('rfmo')!='') {
+				var rfmo = this.model.get('rfmo');
+				/* render rfmo members(with links to the one having documents)  */
+				var memberList = new Array(); /* extract member list : {name: , isonumcode: , link: }*/
+				countryInfoList.forEach(function(d,k){
+						if ($.inArray(rfmo, d.rfmo) != -1) {
+							memberList.push({name : d.name, isonumcode:k, link: (k in countryList)?1:0});
+						}});
+				this.$el.html(this.rfmoTemplate({title: 'Members', dataArray: memberList.sort(function(a,b){return (a.name<b.name)?-1:1})}));
+			}
+			return this;
+		}
+});
+var currentSidePanel = new currentSidePanelView({model: currentState});
 
 /* global arrays to store the parsed CVS data sets */
 var countryList = new Array();
@@ -284,7 +355,7 @@ queue(2)
 			speciesList[d.species].push({
 				type: d.type,
 				measure: d.measure,
-				RFMO: d.RFMO,
+				rfmo: d.RFMO,
 				title: d.title,
 				description: d.description,
 				url: d.symbol,
@@ -319,15 +390,6 @@ function displayCountry(country) {
 	/* update status model to reflect current selection */
 	currentState.set({country: country, species: '', rfmo: ''});
 
-	/* get the country membership */
-
-	$('#sidePanelTitle').text("Member of");
-	var sidePanelInnerHTML = '<ul class="list-group">';
-	countryInfoList[country].rfmo.forEach(function(d){
-			sidePanelInnerHTML += "<li class='list-group-item activeCountry' onclick='displayRFMO(\""+d+"\")'>"+d+"</li>";
-			});
-	$('#sidePanelBody').html(sidePanelInnerHTML + "</ul>");
-
 	$('#mainContainer').show();
 }
 
@@ -337,10 +399,6 @@ function displaySpecies(species) {
 	/* update status model to reflect current selection */
 	currentState.set({country: '', species: species, rfmo: ''});
 
-	/* get fish information : TODO */
-	$('#sidePanelTitle').text("Distribution");
-	$('#sidePanelBody').html("<div>Insert here map of distribution</div>");
-
 	$('#mainContainer').show();
 }
 
@@ -349,21 +407,6 @@ function displayRFMO(RFMO) {
 	$('#mainContainer').hide();
 	/* update status model to reflect current selection */
 	currentState.set({country: '', species: '', rfmo: RFMO});
-
-	/* get members */
-	$('#sidePanelTitle').text("Members");
-	var sidePanelInnerHTML = '<ul class="list-group">';
-	var memberList = new Array(); /* extract member list : {name: , isonumcode: }*/
-	countryInfoList.forEach(function(d,k){if ($.inArray(RFMO, d.rfmo) != -1) {memberList.push({name : d.name, isonumcode:k});}});
-
-	memberList.sort(function(a,b){if (a.name<b.name) return -1; return 1;}).forEach(function (d){
-			sidePanelInnerHTML += "<li class='list-group-item";
-			if ((+d.isonumcode in countryList)) { /* add link to country if it has some docs */
-				sidePanelInnerHTML += " activeCountry' onclick='displayCountry("+d.isonumcode+")";
-				}
-			sidePanelInnerHTML = sidePanelInnerHTML + "'>"+d.name+"</li>";
-			});
-	$('#sidePanelBody').html(sidePanelInnerHTML);
 
 	$('#mainContainer').show();
 }
