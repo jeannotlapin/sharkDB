@@ -44,6 +44,14 @@
 	.list-group-item:first-child {
 		border-top-right-radius: 9px;
 	}
+	ul.doubleCol {
+		width:32em;
+	}
+	ul.doubleCol li {
+		width: 50%;
+		float: left;
+		overflow: hidden;
+	}
     </style>
 </head>
 <body>
@@ -65,7 +73,7 @@
       <ul id="navSelector" class="nav navbar-nav">
         <li class="dropdown">
 	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentCountry">Country</span><span class="caret"></span></a>
-	<ul class="dropdown-menu" role="menu" id="countryDropdown"></ul>
+	<ul class="dropdown-menu doubleCol" role="menu" id="countryDropdown"></ul>
         </li>
         <li class="dropdown">
 	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentSpecies">Species</span><span class="caret"></span></a>
@@ -214,8 +222,9 @@
 </script>
 
 <script type="text/template" id="selectorDropdown">
-	<li><a href='#' class='ddpick' data-<%= type %>="<%= data %>"><%= name %></a></li>
+	<li><a href='#' class='ddpick' data-<%= type %>='<%= data %>' title='<%= name %>'><%= name %></a></li>
 </script>
+
 <script src='assets/js/app.js'></script>
 <script src='assets/js/models/state-model.js'></script>
 <script src='assets/js/views/app-view.js'></script>
