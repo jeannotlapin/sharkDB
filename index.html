@@ -34,7 +34,7 @@
 	.activeCountry, .activeRFMO{
 		background-color : #edf5fe;
 	}
-	.activeCountry:hover, .activeRFMO:hover{
+	.activeCountry:hover, .activeRFMO:hover, .doclink:hover{
 		background-color : #e7f0f8;
 		cursor:grab;
 	}
@@ -176,7 +176,7 @@
 		<% _.each(dataArray, function(d){ %>
 		<tr>
 			<td><%= d.type %></td>
-			<td><%= d.rfmo %></td>
+			<td class='doclink' data-rfmo='<%= d.rfmo %>'><%= d.rfmo %></td>
 			<td><%= d.title %></td>
 			<td><%= d.description %></td>
 			<td><%= d.year %></td>
@@ -202,7 +202,7 @@
 		<% _.each(dataArray, function(d){ %>
 		<tr>
 			<td><%= d.type %></td>
-			<td><%= d.species %></td>
+			<td class='doclink' data-species='<%= d.species %>'><%= d.species %></td>
 			<td><%= d.title %></td>
 			<td><%= d.description %></td>
 			<td><%= d.year %></td>
@@ -242,6 +242,7 @@ var currentSelectorView = Backbone.View.extend({
 
 			var ddTemplate = _.template($('#selectorDropdown').html());
 
+			/* at init, create the dropdown from the data retrieved from CVS : this object is instanciated after the CVS load/parse */
 			Object.keys(countryList).sort(function (a,b) { /* sort the country by alphabetical order on name retrieved in the countryInfoList */
 				return ((countryInfoList[a].name < countryInfoList[b].name)?-1:1);})
 				.forEach(function (d) {this.$('#countryDropdown').append(ddTemplate({type:'country', data:+d, name:countryInfoList[d].name}));
@@ -284,6 +285,11 @@ var currentCentralPanelView = Backbone.View.extend({
 			this.options = options || {};
 			this.listenTo(this.model, 'change', this.render);
 		},
+
+		events : {
+			"click td.doclink":"updateCurrentState"
+		},
+
 		countryTemplate : _.template($('#countrySelectedDocuments').html()),
 		speciesTemplate : _.template($('#speciesSelectedDocuments').html()),
 		rfmoTemplate : _.template($('#rfmoSelectedDocuments').html()),
@@ -304,6 +310,12 @@ var currentCentralPanelView = Backbone.View.extend({
 			}
 			this.$el.show();
 			return this;
+		},
+
+		updateCurrentState : function (e) {
+			this.model.set({country: ('country' in e.target.dataset)?e.target.dataset.country:'',
+					rfmo: ('rfmo' in e.target.dataset)?e.target.dataset.rfmo:'',
+					species: ('species' in e.target.dataset)?e.target.dataset.species:''});
 		}
 });
 var currentCentralPanel = new currentCentralPanelView({model: currentState});
