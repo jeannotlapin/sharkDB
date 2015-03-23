@@ -5,14 +5,16 @@ window.sharksDB = {
 
 	initialize : function () {
 		sharksDB.Collections.countryList = new Array();
-		sharksDB.Collections.speciesList = new Object();
-		sharksDB.Collections.RFMOList = new Object();
 		sharksDB.Collections.countryInfoList = new Array();
+		sharksDB.Collections.speciesList = new Object();
+		sharksDB.Collections.speciesInfoList = new Object();
+		sharksDB.Collections.RFMOList = new Object();
+		sharksDB.Collections.RFMOInfoList = new Object();
 
 		sharksDB.Models.currentState = new sharksDB.Models.state();
 
 		queue(2)
-		.defer(d3.csv, "data/countryList.csv", function (d) {
+		.defer(d3.csv, "data/countryDocList.csv", function (d) {
 			if (+d.isonumcode != 0 && !isNaN(d.isonumcode)) { /* skip invalid country code */
 				if (!(+d.isonumcode in sharksDB.Collections.countryList)) {
 					sharksDB.Collections.countryList[+d.isonumcode] = new Array();
@@ -21,12 +23,12 @@ window.sharksDB = {
 					type: d.type,
 					title: d.title,
 					description: d.description,
-					url: d.symbol,
+					url: d.url,
 					year: d.year
 					});
 			}
 		})
-		.defer(d3.csv, "data/RFMOList.csv", function (d) {
+		.defer(d3.csv, "data/RFMODocList.csv", function (d) {
 			/* populate RFMOList */
 			if (!(d.RFMO in sharksDB.Collections.RFMOList)) {
 				sharksDB.Collections.RFMOList[d.RFMO] = new Array();
@@ -65,6 +67,29 @@ window.sharksDB = {
 				};
 			}
 		})
+		.defer(d3.csv, "data/RFMOSpecs.csv", function (d) {
+			if (!(d.acronym in sharksDB.Collections.RFMOInfoList)) {
+				sharksDB.Collections.RFMOInfoList[d.acronym] = {
+					name: d.name,
+					url: d.url,
+					map: d.map
+				}
+			}
+		})
+		.defer(d3.csv, "data/speciesSpecs.csv", function (d) {
+			if (!(d.name in sharksDB.Collections.speciesInfoList)) {
+				sharksDB.Collections.speciesInfoList[d.name] = {
+					family: d.Family,
+					EN: d.EN,
+					FR: d.FR,
+					SP: d.SP,
+					description: d.Description,
+					factsheet: d.factsheet,
+					map: d.map
+				}
+			}
+		})
+
 		.awaitAll(ready);
 	}
 

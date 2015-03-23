@@ -53,7 +53,11 @@
 		overflow: hidden;
 	}
 
-	#map { width:800px; height: 500px; position:relative; }
+	.linkCol {
+		width: 2.5em;
+	}
+
+	#map { width:100%; height: 500px; position:relative; }
     </style>
 </head>
 <body>
@@ -129,7 +133,27 @@
 	<div class="panel-heading">
 		<h3 class="panel-title"><%= title %></h3>
 	</div>
-	<div class="panel-body"> Insert here map of distribution </div>
+	<div class="panel-body">
+		<h4>Family</h4>
+		<ul class="list-group">
+			<li class='list-group-item'>
+				<%= data.family %>
+			</li>
+		</ul>
+		<h4>Common names</h4>
+		<ul class="list-group">
+			<li class='list-group-item'>
+				<img src='img/gb.png'/> <%= data.EN %>
+			</li>
+			<li class='list-group-item'>
+				<img src='img/fr.png'/> <%= data.FR %>
+			</li>
+			<li class='list-group-item'>
+				<img src='img/es.png'/> <%= data.SP %>
+			</li>
+		</ul>
+		<h4><a target="_blank" href="<%= data.factsheet %>">Factsheet</h4>
+	</div>
 </script>
 
 <script type="text/template" id="rfmoSidePanel">
@@ -150,21 +174,21 @@
 	<table class="table table-striped table-hover">
 	<thead>
 		<tr class="tableHeader">
+			<th class='linkCol'></th>
 			<th>Type</th>
 			<th>Title</th>
 			<th>Description</th>
 			<th>Year</th>
-			<th>link</th>
 		</tr>
 	</thead>
 	<tbody>
 		<% _.each(dataArray, function(d){ %>
 		<tr>
+			<td><% if (d.url!='') print("<a target='_blank' href='"+d.url+"'><img width='20px' src='img/link-icon.png'/></a>") %></td>
 			<td><%= d.type %></td>
 			<td><%= d.title %></td>
 			<td><%= d.description %></td>
 			<td><%= d.year %></td>
-			<td><%= d.url %></td>
 		</tr>
 		<% });%>
 	</tbody>
@@ -174,23 +198,23 @@
 	<table class="table table-striped table-hover">
 	<thead>
 		<tr class="tableHeader">
+			<th class='linkCol'></th>
 			<th>Type</th>
 			<th>RFMO</th>
 			<th>Title</th>
 			<th>Description</th>
 			<th>Year</th>
-			<th>link</th>
 		</tr>
 	</thead>
 	<tbody>
 		<% _.each(dataArray, function(d){ %>
 		<tr>
+			<td><% if (d.url!='') print("<a target='_blank' href='"+d.url+"'><img width='20px' src='img/link-icon.png'/></a>") %></td>
 			<td><%= d.type %></td>
 			<td class='doclink' data-rfmo='<%= d.rfmo %>'><%= d.rfmo %></td>
 			<td><%= d.title %></td>
 			<td><%= d.description %></td>
 			<td><%= d.year %></td>
-			<td><%= d.url %></td>
 		</tr>
 		<% });%>
 	</tbody>
@@ -200,23 +224,23 @@
 	<table class="table table-striped table-hover">
 	<thead>
 		<tr class="tableHeader">
+			<th class='linkCol'></th>
 			<th>Type</th>
 			<th>Species</th>
 			<th>Title</th>
 			<th>Description</th>
 			<th>Year</th>
-			<th>link</th>
 		</tr>
 	</thead>
 	<tbody>
 		<% _.each(dataArray, function(d){ %>
 		<tr>
+			<td><% if (d.url!='') print("<a target='_blank' href='"+d.url+"'><img width='20px' src='img/link-icon.png'/></a>") %></td>
 			<td><%= d.type %></td>
 			<td class='doclink' data-species='<%= d.species %>'><%= d.species %></td>
 			<td><%= d.title %></td>
 			<td><%= d.description %></td>
 			<td><%= d.year %></td>
-			<td><%= d.url %></td>
 		</tr>
 		<% });%>
 	</tbody>

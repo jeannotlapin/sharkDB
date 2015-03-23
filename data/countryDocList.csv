@@ -1,0 +1,61 @@
+type,country,isonumcode,status,year,title,description,url
+NPOA,Indonesia,360,adopted,2010,D001_Indonesia2010.pdf,,D001_Indonesia2010.pdf
+NPOA,India,356,,,,,
+NPOA,Spain,724,adopted,2009,D003_EU2009.pdf,,D003_EU2009.pdf
+NPOA,"Taiwan, Republic of China",158,draft,2006,D004_Taiwan2014.pdf,,D004_Taiwan2014.pdf
+NPOA,Argentina,032,adopted,2009,D005_Argentina2009.pdf,,D005_Argentina2009.pdf
+NPOA,Mexico,484,adopted,2004,D006_Mexico2004.pdf,,D006_Mexico2004.pdf
+NPOA,United States of America,581,adopted,2001,D007_USA2001.pdf,,D007_USA2001.pdf
+NPOA,Pakistan,586,,,,,
+NPOA,Malaysia,458,adopted,2006,D009_Malaysia2006.pdf,,D009_Malaysia2006.pdf
+NPOA,Japan,392,adopted,2001,D010_Japan2001.pdf,,D010_Japan2001.pdf
+NPOA,Japan,392,,2009,D011_Japan2009.pdf,,D011_Japan2009.pdf
+NPOA,France,250,adopted,2009,D012_EU2009.pdf,,D012_EU2009.pdf
+NPOA,Thailand,764,draft,,D013_ThailandNPOA.pdf,,D013_ThailandNPOA.pdf
+NPOA,Brazil,076,nonofficial,2005,D014_Brazil2005.pdf,,D014_Brazil2005.pdf
+NPOA,Brazil,076,draft,2011,D015_Brazil2011.pdf,,D015_Brazil2011.pdf
+NPOA,Sri Lanka,144,nonofficial,2013,D016_SriLanka2013.pdf,,D016_SriLanka2013.pdf
+NPOA,New Zealand,554,approved,2008,D017_NewZealand2008.pdf,,D017_NewZealand2008.pdf
+NPOA,New Zealand,554,adopted,2013,D018_NewZealand2013.pdf,,D018_NewZealand2013.pdf
+NPOA,Portugal,620,adopted,2009,D019_EU2009.pdf,,D019_EU2009.pdf
+NPOA,Nigeria,566,,,,,
+NPOA,"Iran, Islamic Republic of",364,,,,,
+NPOA,United Kingdom,826,adopted,2009,D022_EU2009.pdf,,D022_EU2009.pdf
+NPOA,United Kingdom,826,draft,2011,D023_UK2011.pdf,,D023_UK2011.pdf
+NPOA,"Korea, Republic of",410,draft,2011,D024_Korea2011.pdf,,D024_Korea2011.pdf
+NPOA,Canada,124,adopted,2007,National Plan of Action for the Conservation and Management of Sharks,,http://www.dfo-mpo.gc.ca/npoa-pan/npoa-pan/npoa-sharks-eng.htm
+NPOA,Peru,604,draft,2013,D026_Peru2013.pdf,,D026_Peru2013.pdf
+NPOA,Peru,604,adopted,2014,D027_Peru2014.pdf,,D027_Peru2014.pdf
+NPOA,Yemen,887,,,,,
+NPOA,Australia,036,adopted,2004,D029_Australia2004.pdf,,D029_Australia2004.pdf
+NPOA,Senegal,686,draft,2005,D030_Senegal2005.pdf,,D030_Senegal2005.pdf
+NPOA,Venezuela (Bolivarian Republic of),862,nonofficial,2006,D031_Venezuela2006.pdf,,D031_Venezuela2006.pdf
+NPOA,Belize,084,draft,2005,D032_Belize2005.pdf,,D032_Belize2005.pdf
+NPOA,Chile,152,draft,2006,D033_Chile2006.pdf,,D033_Chile2006.pdf
+NPOA,Colombia,156,,2010,D034_Colombia2010.pdf,,D034_Colombia2010.pdf
+NPOA,Ecuador,218,,2005,D035_Ecuador2005.pdf,,D035_Ecuador2005.pdf
+NPOA,Gambia,270,draft,,D036_Gambia.pdf,,D036_Gambia.pdf
+NPOA,Guatemala,320,draft,2008,D037_Guatemala2008.pdf,,D037_Guatemala2008.pdf
+NPOA,Guinea-Bissau,624,adopted,2007,D038_Guinea-Bissau2007.pdf,,D038_Guinea-Bissau2007.pdf
+NPOA,Philippines,608,adopted,2009,D039_Philippines2009.pdf,,D039_Philippines2009.pdf
+NPOA,Seychelles,690,adopted,2007,D040_Seychelles2007.pdf,,D040_Seychelles2007.pdf
+NPOA,Uruguay,858,,2008,D041_Uruguay2008.pdf,,D041_Uruguay2008.pdf
+NPOA,Costa Rica,156,draft,2005,D042_CostaRica2005.pdf,,D042_CostaRica2005.pdf
+NPOA,Costa Rica,156,adopted,2010,D043_CostaRica2010.pdf,,D043_CostaRica2010.pdf
+NPOA,Cape Verde,132,draft,2005,D044_CaboVerde2005.pdf,,D044_CaboVerde2005.pdf
+NPOA,South Africa,710,adopted,2013,D045_SouthAfrica2013.pdf,,D045_SouthAfrica2013.pdf
+NPOA,Bangladesh,050,in progress,,,,
+NPOA,Maldives,462,draft,2014,D051_Maldives2014.pdf,,D051_Maldives2014.pdf
+NPOA,Myanmar,104,draft,2005,D052_Myanmar2005.pdf,,D052_Myanmar2005.pdf
+NPOA,Vanuatu,548,,,,,
+RPOA,,#N/A,adopted,2003,Action Plan for the Conservation of Cartilaginous Fishes (Chondrichthyans) in the Mediterranean Sea,,
+RPOA,,#N/A,,2008,"Plan de Acción Regional para la Conservación de Tiburones, Rayas y Quimeras en el Pacífico Sudeste",,
+RPOA,Fiji,242,,2009,Pacific Islands - Regional Plan of Action for Sharks,,
+RPOA,Mauritania,478,draft,,The CSRP and International Foundation for the Ban d’Arguin subregional Plan of Action,,
+NPOA,Australia,036,,2004,National Plan of Action for the Conservation and Management of Sharks (Shark-plan),,http://www.agriculture.gov.au/SiteCollectionDocuments/fisheries/environment/bycatch/web-shark-plan-full.pdf
+report,Bangladesh,050,,,,,
+NPOA,Malaysia,458,,2014,,,
+NPOA,Mauritania,478,,,,,
+report,United States of America,581,,,,,
+report,Canada,124,,,,,
+,Australia,036,,2012,National Plan of Action for the Conservation and Management of Sharks 2012 (Shark-plan 2),,http://www.agriculture.gov.au/SiteCollectionDocuments/fisheries/environment/sharks/sharkplan2-final/sharkplan2-action.pdf

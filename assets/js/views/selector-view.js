@@ -14,7 +14,8 @@ sharksDB.Views.Selector = Backbone.View.extend({
 			/* at init, create the dropdown from the data retrieved from CVS : this object is instanciated after the CVS load/parse */
 			Object.keys(sharksDB.Collections.countryList).sort(function (a,b) { /* sort the country by alphabetical order on name retrieved in the countryInfoList */
 				return ((sharksDB.Collections.countryInfoList[a].name < sharksDB.Collections.countryInfoList[b].name)?-1:1);})
-				.forEach(function (d) {this.$('#countryDropdown').append(ddTemplate({type:'country', data:+d, name:sharksDB.Collections.countryInfoList[d].name}));
+				.forEach(function (d) {
+					this.$('#countryDropdown').append(ddTemplate({type:'country', data:+d, name:sharksDB.Collections.countryInfoList[d].name}));
 				});
 
 			Object.keys(sharksDB.Collections.speciesList).sort().forEach(function(d) {
@@ -33,7 +34,7 @@ sharksDB.Views.Selector = Backbone.View.extend({
 			this.$('#currentRFMO').html((this.model.get('rfmo')=='')?'RFMO':this.model.get('rfmo'));
 
 			/* title reflects the selection */
-			$('#displayTitle').text((this.model.get('country')!='')?sharksDB.Collections.countryInfoList[this.model.get('country')].name:((this.model.get('species')!='')?this.model.get('species'):this.model.get('rfmo')));
+			$('#displayTitle').html((this.model.get('country')!='')?sharksDB.Collections.countryInfoList[this.model.get('country')].name:((this.model.get('species')!='')?this.model.get('species'):"<a href='"+sharksDB.Collections.RFMOInfoList[this.model.get('rfmo')].url+"'>"+sharksDB.Collections.RFMOInfoList[this.model.get('rfmo')].name+"</a>"));
 			return this;
 		},
 
