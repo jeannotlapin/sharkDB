@@ -34,7 +34,7 @@ sharksDB.Views.Selector = Backbone.View.extend({
 			this.$('#currentRFMO').html((this.model.get('rfmo')=='')?'RFMO':this.model.get('rfmo'));
 
 			/* title reflects the selection */
-			$('#displayTitle').html((this.model.get('country')!='')?sharksDB.Collections.countryInfoList[this.model.get('country')].name:((this.model.get('species')!='')?this.model.get('species'):"<a href='"+sharksDB.Collections.RFMOInfoList[this.model.get('rfmo')].url+"'>"+sharksDB.Collections.RFMOInfoList[this.model.get('rfmo')].name+"</a>"));
+			$('#displayTitle').html((this.model.get('country')!='')?sharksDB.Collections.countryInfoList[this.model.get('country')].name:((this.model.get('species')!='')?this.model.get('species'):"<a target='_blank' href='"+sharksDB.Collections.RFMOInfoList[this.model.get('rfmo')].url+"'>"+sharksDB.Collections.RFMOInfoList[this.model.get('rfmo')].name+"</a>"));
 			return this;
 		},
 
