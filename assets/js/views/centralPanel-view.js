@@ -35,12 +35,12 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 				this.$el.show(); /* display the map div before loading the map to get correct dimension */
 				L.mapbox.accessToken = 'pk.eyJ1IjoiamVhbm5vdGxhcGluIiwiYSI6Im5qNTl1QXcifQ.fex2-4xMOYtkSgwtkwRGBQ';
 				var map = L.mapbox.map('map', 'jeannotlapin.lcld15nl').setView([45, 0], 2);
-				var ue = $.inArray(rfmo, sharksDB.Collections.countryInfoList[1001].rfmo); /* UE have the arbotrary 1001 iso code in the DB */
+				var ue = ($.inArray(rfmo, sharksDB.Collections.countryInfoList[1001].rfmo) != -1); /* UE have the arbotrary 1001 iso code in the DB */
 				var featureLayer = L.mapbox.featureLayer()
 				    .loadURL('data/geodata/countries110.json')
 				    .setFilter(function (feature,layer) {
 					    /* check country */
-					    if (feature.properties.iso_n3 in sharksDB.Collections.countryInfoList && sharksDB.Collections.countryInfoList[feature.properties.iso_n3] != undefined) {
+					    if (+feature.properties.iso_n3 in sharksDB.Collections.countryInfoList && sharksDB.Collections.countryInfoList[+feature.properties.iso_n3] != undefined) {
 						    if ($.inArray(rfmo, sharksDB.Collections.countryInfoList[+feature.properties.iso_n3].rfmo) != -1) {
 							    return true
 						    }
