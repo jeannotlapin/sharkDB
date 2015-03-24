@@ -72,7 +72,7 @@ window.sharksDB = {
 				sharksDB.Collections.RFMOInfoList[d.acronym] = {
 					name: d.name,
 					url: d.url,
-					map: d.map
+					map: d.map.split(',')
 				}
 			}
 		})

@@ -1,14 +1,15 @@
 acronym,name,url,map
-ICCAT,The International Commission for the Conservation of Atlantic Tunas ,http://www.iccat.es,"http://www.fao.org/figis/geoserver/factsheets/rfbs.html?rfb=ICCAT&extent=-182.382812,-96.679687,102.382813,96.679688&zoom=0&prj=4372"
-SEAFO,Southeast Atlantic Fisheries Organization,http://www.seafo.org/,"http://www.fao.org/figis/geoserver/factsheets/rfbs.html?rfb=SEAFO&extent=-137.382812,-87.679687,147.382813,105.679688&zoom=0&prj=4332"
-WCPFC,Western and Central Pacific Fisheries Commission,http://www.wcpfc.int/,http://www.fao.org/fishery/rfb/wcpfc/en
-NAFO,Northwest Atlantic Fisheries Organization,http://www.nafo.int,http://www.fao.org/fishery/rfb/nafo/en
-NEAFC,North East Atlantic Fisheries Organization,http://www.neafc.org/,http://www.fao.org/fishery/rfb/neafc/en
-IOTC,Indian Ocean Tuna Commission,http://www.iotc.org,http://www.fao.org/fishery/rfb/iotc/en
-SIOFA,South Indian Ocean Fisheries Agreement,,http://www.fao.org/fishery/rfb/siofa/en
-IATTC,Inter-American Tropical Tuna Commission,http://www.iattc.org,http://www.fao.org/fishery/rfb/iattc/en
-SPRFMO,South Pacific Regional Fisheries Management Organisation,http://www.sprfmo.int,http://www.fao.org/fishery/organization/24558/en
-GFCM,General Fisheries Commission for the Mediterranean,http://www.gfcm.org,http://www.fao.org/fishery/organization/24561/en
-CCAMLR,Commission for the Conservation of Antarctic Marine Living Resources,http://www.ccamlr.org/,http://www.fao.org/fishery/rfb/ccamlr/en
-NPFC,North Pacific Fisheries Commission,http://nwpbfo.nomaki.jp/,http://www.fao.org/fishery/organization/24564/en
-CCSBT,Commission for the Conservation of Southern Bluefin Tuna,http://www.ccsbt.org,http://www.fao.org/fishery/rfb/ccsbt/en
+ICCAT,The International Commission for the Conservation of Atlantic Tunas ,http://www.iccat.es,"10,-33"
+SEAFO,Southeast Atlantic Fisheries Organization,http://www.seafo.org/,"15,0"
+WCPFC,Western and Central Pacific Fisheries Commission,http://www.wcpfc.int/,"18, 180"
+NAFO,Northwest Atlantic Fisheries Organization,http://www.nafo.int,"40,-42
+"
+NEAFC,North East Atlantic Fisheries Organization,http://www.neafc.org/,"45,-5"
+IOTC,Indian Ocean Tuna Commission,http://www.iotc.org,"8,77"
+SIOFA,South Indian Ocean Fisheries Agreement,,"80,12"
+IATTC,Inter-American Tropical Tuna Commission,http://www.iattc.org,"30,-120"
+SPRFMO,South Pacific Regional Fisheries Management Organisation,http://www.sprfmo.int,"20,-140"
+GFCM,General Fisheries Commission for the Mediterranean,http://www.gfcm.org,"42,18"
+CCAMLR,Commission for the Conservation of Antarctic Marine Living Resources,http://www.ccamlr.org/,"0,25"
+NPFC,North Pacific Fisheries Commission,http://nwpbfo.nomaki.jp/,"45,-170"
+CCSBT,Commission for the Conservation of Southern Bluefin Tuna,http://www.ccsbt.org,"0,80"
