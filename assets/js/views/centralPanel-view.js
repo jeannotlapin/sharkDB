@@ -16,6 +16,7 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 
 		render : function () {
 			this.$el.hide();
+			$('#map').hide();
 			if (this.model.get('country')!='') {
 				/* render country table  */
 				this.$el.html(this.countryTemplate({dataArray: sharksDB.Collections.countryList[this.model.get('country')].sort(yearSort)}));
@@ -31,15 +32,34 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 				/* render rfmo table  */
 				this.$el.html(this.rfmoTemplate({dataArray: sharksDB.Collections.RFMOList[rfmo].sort(yearSort)}));
 				/* render rfmo map */
-				this.$el.append("<div id='map'></div>");
+				//this.$el.append("<div id='map'></div>");
+				$('#map').show();
 				this.$el.show(); /* display the map div before loading the map to get correct dimension */
-				/* load map from mapbox */
-				L.mapbox.accessToken = 'pk.eyJ1IjoiamVhbm5vdGxhcGluIiwiYSI6Im5qNTl1QXcifQ.fex2-4xMOYtkSgwtkwRGBQ';
-				var map = L.mapbox.map('map', 'jeannotlapin.lcld15nl', {worldCopyJump: true}).setView(sharksDB.Collections.RFMOInfoList[rfmo].map, 2);
+
+				/* load map from mapbox if needed */
+				if (sharksDB.Map.map == undefined) {
+					sharksDB.Map.map = L.mapbox.map('map', 'jeannotlapin.lcld15nl', {worldCopyJump: true});
+
+					/* add the 200nm limit from FAO server */
+					var nm200Layer = L.tileLayer.wms('http://www.fao.org/figis/geoserver/wms', {
+							dpiMode: 7,
+							layers: 'fifao:limit_200nm',
+							featureCount: 10,
+							format: 'image/png',
+							transparent: true,
+						})
+						.setOpacity(0.15)
+						.addTo(sharksDB.Map.map);
+
+				} else { /* map was already loaded, we must clean countries and zone layers before adding new ones */
+					$('#rfmoCountries').remove();/* remove countries layer(the svg added using d3 with id rfmoCountries) */
+					sharksDB.Map.map.removeLayer(sharksDB.Map.rfmoLayer); /* remove the wms tile of rfmo competence zone */
+				}
+				sharksDB.Map.map.setView(sharksDB.Collections.RFMOInfoList[rfmo].map, 2);
 
 				/* add countries highlighting layer using d3 */
 				var ue = ($.inArray(rfmo, sharksDB.Collections.countryInfoList[1001].rfmo) != -1); /* UE have the arbitrary 1001 iso code in the DB */
-				var svg = d3.select(map.getPanes().overlayPane).append("svg"),
+				var svg = d3.select(sharksDB.Map.map.getPanes().overlayPane).append("svg").attr("id", "rfmoCountries"),
 				g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 				d3.json("data/geodata/countries110.json", function(collection) {
@@ -69,7 +89,7 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 						.style("stroke", "#3dd5a8")
 						.style("stroke-opacity", 0.5);
 
-					map.on("viewreset", reset);
+					sharksDB.Map.map.on("viewreset", reset);
 					reset();
 
 					// Reposition the SVG to cover the features.
@@ -90,24 +110,13 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 
 					// Use Leaflet to implement a D3 geometric transformation.
 					function projectPoint(x, y) {
-						var point = map.latLngToLayerPoint(new L.LatLng(y, x));
+						var point = sharksDB.Map.map.latLngToLayerPoint(new L.LatLng(y, x));
 						this.stream.point(point.x, point.y);
 					}
 				});
 
-				/* add the 200nm limit from FAO server */
-				var nm200Layer = L.tileLayer.wms('http://www.fao.org/figis/geoserver/wms', {
-							dpiMode: 7,
-							layers: 'fifao:limit_200nm',
-							featureCount: 10,
-							format: 'image/png',
-							transparent: true,
-						})
-						.setOpacity(0.15)
-						.addTo(map);
-
 				/* add the competence area from FAO server */
-				var nm200Layer = L.tileLayer.wms('http://www.fao.org/figis/geoserver/wms', {
+				sharksDB.Map.rfmoLayer = L.tileLayer.wms('http://www.fao.org/figis/geoserver/wms', {
 							dpiMode: 7,
 							layers: 'rfb:RFB_'+rfmo,
 							featureCount: 10,
@@ -115,7 +124,7 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 							transparent: true,
 						})
 						.setOpacity(0.15)
-						.addTo(map);
+						.addTo(sharksDB.Map.map);
 
 			}
 			return this;

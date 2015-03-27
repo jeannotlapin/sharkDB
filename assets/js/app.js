@@ -2,6 +2,7 @@ window.sharksDB = {
 	Models:{},
 	Views:{},
 	Collections:{},
+	Map:{},
 
 	initialize : function () {
 		sharksDB.Collections.countryList = new Array();
@@ -12,6 +13,12 @@ window.sharksDB = {
 		sharksDB.Collections.RFMOInfoList = new Object();
 
 		sharksDB.Models.currentState = new sharksDB.Models.state();
+
+		/* maps: initialise mapbox token and set to undefined map and rfmoLayer variables */
+		L.mapbox.accessToken = 'pk.eyJ1IjoiamVhbm5vdGxhcGluIiwiYSI6Im5qNTl1QXcifQ.fex2-4xMOYtkSgwtkwRGBQ';
+		sharksDB.Map.map = undefined; /* this is useless, just to keep track of properties used in the Map object */
+		sharksDB.Map.rfmoLayer = undefined;
+
 
 		queue(2)
 		.defer(d3.csv, "data/countryDocList.csv", function (d) {
