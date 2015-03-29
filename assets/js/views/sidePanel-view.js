@@ -26,8 +26,8 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 				}
 			}
 			if (this.model.get('species')!='') {
-				/* render species distribution  */
-				this.$el.html(this.speciesTemplate({title: this.model.get('species'), data: ((this.model.get('species') in sharksDB.Collections.speciesInfoList)?sharksDB.Collections.speciesInfoList[this.model.get('species')]:{family:'', EN:'', FR:'', SP:'', description:'', factsheet:'', map:''})}));
+				/* render species informations  */
+				this.$el.html(this.speciesTemplate({title: this.model.get('species'), data: ((this.model.get('species') in sharksDB.Collections.speciesInfoList)?sharksDB.Collections.speciesInfoList[this.model.get('species')]:{family:'', EN:'', FR:'', SP:'', description:'', factsheet:'', img:''})}));
 			}
 			if (this.model.get('rfmo')!='') {
 				var rfmo = this.model.get('rfmo');

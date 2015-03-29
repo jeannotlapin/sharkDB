@@ -92,7 +92,8 @@ window.sharksDB = {
 					SP: d.SP,
 					description: d.Description,
 					factsheet: d.factsheet,
-					map: d.map
+					map: d.map,
+					img: d.img
 				}
 			}
 		})
