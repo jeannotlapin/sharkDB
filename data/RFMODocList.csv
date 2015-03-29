@@ -1,8 +1,17 @@
-type,measure,RFMO,species,year,title,description,symbol
-recommendation,prohibited species,ICCAT,Carcharhinus longimanus,2010,RECOMMENDATION BY ICCAT ON THE CONSERVATION OF OCEANIC WHITETIP SHARK CAUGHT IN ASSOCIATION WITH FISHERIES IN THE ICCAT CONVENTION AREA,,ICCAT_2010_07
-recommendation,prohibited species,ICCAT,Family Sphyrnidae,2010,RECOMMENDATION BY ICCAT ON HAMMERHEAD SHARKS (FAMILY SPHYRNIDAE) CAUGHT IN ASSOCIATION WITH FISHERIES MANAGED BY ICCAT,,ICCAT_2010_08
-conservation measure,catch measure,SEAFO,Shark species in the convention area,2006,Conservation Measure 04/06 on the Conservation of Sharks Caught in Association with Fisheries Managed by SEAFO,,CM04_06
-recommendation,prohibited species,SEAFO,deep-water shark species,2008,Recommendation 1/2008 Banning of deep-water shark catches,,Rec01_08
-conservation and management measure,catch measure,WCPFC,Shark species in the convention area,2010,CONSERVATION AND MANAGEMENT MEASURE FOR SHARKS,,CMM2010_07
-conservation and management measure,data collection and research,WCPFC,Shark species in the convention area,2010,CONSERVATION AND MANAGEMENT MEASURE FOR SHARKS,,CMM2010_07
-conservation and management measure,reporting requirement,WCPFC,Prionace glauca,2010,CONSERVATION AND MANAGEMENT MEASURE FOR SHARKS,,CMM2010_07
+type,measure,RFMO,species,year,title,description,symbol,
+recommendation,prohibited species,ICCAT,Carcharhinus longimanus,2010,RECOMMENDATION BY ICCAT ON THE CONSERVATION OF OCEANIC WHITETIP SHARK CAUGHT IN ASSOCIATION WITH FISHERIES IN THE ICCAT CONVENTION AREA,,ICCAT_2010_07,http://www.iccat.es/Documents%5CRecs%5Ccompendiopdf-e%5C2010-07-e.pdf
+recommendation,prohibited species,ICCAT,Sphyrnidae,2010,RECOMMENDATION BY ICCAT ON HAMMERHEAD SHARKS (FAMILY SPHYRNIDAE) CAUGHT IN ASSOCIATION WITH FISHERIES MANAGED BY ICCAT,,ICCAT_2010_08,http://www.iccat.es/Documents%5CRecs%5Ccompendiopdf-e%5C2010-08-e.pdf
+conservation measure,catch measure,SEAFO,,2006,Conservation Measure 04/06 on the Conservation of Sharks Caught in Association with Fisheries Managed by SEAFO,,CM04_06,http://bmis.wcpfc.int/docs/decisions/SEAFO_sharks_CM_04-06_consSharks_approved4Oct2006.pdf
+recommendation,prohibited species,SEAFO,,2008,Recommendation 1/2008 Banning of deep-water shark catches,,Rec01_08,
+Conservation and Management Measure,,WCPFC,,2010,Conservation and Management Measure for Sharks (I),,CMM2010_07,https://www.wcpfc.int/system/files/10_07_CMM%202010-07%20%5BSharks%5D.pdf
+Conservation and Management Measure,,WCPFC,Carcharhinus longimanus,2012,Conservation and Management Measure for Oceanic Whitetip Shark,,CMM 2011-04,https://www.wcpfc.int/system/files/CMM%202013-08%20CMM%20for%20Silky%20Sharks_1.pdf
+Conservation and Management Measure,,WCPFC,Carcharhinus falciformis,2013,Conservation and Management Measure for Silky Shark,,CMM 2013-08,https://www.wcpfc.int/system/files/CMM%202011-04%20Conservation%20and%20Management%20Measure%20for%20Oceanic%20Whitetip%20Sharks%20.pdf
+Science,,WCPFC,,2010,WCPFC Shark Research Plan,,SC6-EB-WP-01,https://www.wcpfc.int/doc/sc6-eb-wp-01/wcpfc-shark-research-plan-2010
+Conservation and Management Measure,,WCPFC,,2015,Conservation and Management Measures for Sharks (II),,CMM 2014-05,https://www.wcpfc.int/system/files/CMM%202014-05%20Conservation%20and%20Management%20Measure%20for%20Sharks_0.pdf
+Science,,WCPFC,,2014,Progress on the Shark Research Plan,,SC10-EB-WP-04,https://www.wcpfc.int/system/files/EB-WP-04%20shark%20research%20plan_1.pdf
+Science,,WCPFC,,2013,Silky Shark Stock Assessment,,SC9-SA-WP-03,https://www.wcpfc.int/system/files/Rice%20FAL%20Assessment%202013.pdf
+Conservation and Management Measure,,IOTC,,2005,Resolution Concerning The Conservation Of Sharks Caught In Association With Fisheries Managed By IOTC,,Resolution 05/05,http://www.iotc.org/cmm/resolution-0505-concerning-conservation-sharks-caught-association-fisheries-managed-iotc
+Conservation and Management Measure,,IOTC,Alopiidae,2012,Resolution on the Conservation of Thresher Sharks (Family Alopiidae) Caught in Association with Fisheries in the IOTC Area of Competence,,Resolution 12/09,http://www.iotc.org/cmm/resolution-1209-conservation-thresher-sharks-family-alopiidae-caught-association-fisheries-iotc
+Conservation and Management Measure,,IOTC,,2013,Resolution 13/05 On the conservation of whale sharks (Rhincodon typus),,Resolution 13/05,http://www.iotc.org/cmm/resolution-1305-conservation-whale-sharks-rhincodon-typus
+Management,,IOTC,,2014,STATUS OF DEVELOPMENT AND IMPLEMENTATION OF NATIONAL PLANS OF ACTION (NPOA) FOR SHARKS AND SEABIRDS AND IMPLEMENTATION OF THE FAO GUIDELINES TO REDUCE MARINE TURTLE MORTALITY IN FISHING OPERATIONS,,,http://www.iotc.org/science/table-progress-implementing-npoa-sharks-npoa-seabirds-and-fao-guidelines-reduce-sea-turtle-mortality
+Science,,IOTC,,2014,Report of the Indian Ocean Shark Year Program workshop,,IO-ShYP01,file:///C:/Users/Jessica/Downloads/IOTC-2014-IOShYP01-RE_-_FINAL_DO_NOT_MODIFY.pdf
