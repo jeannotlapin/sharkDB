@@ -66,6 +66,10 @@
 		position:relative;
 		border-top:none;
 	}
+	body {
+		background-image: url(img/opening.jpg);
+		background-size: 100%;
+	}
     </style>
 </head>
 <body>
@@ -106,8 +110,7 @@
 	  <div class="bs-doc-section">
 		  <div class="row">
 			  <div class="col-lg-9">
-				  <div class="panel panel-info" id="centralPanel">
-					  <img src='img/opening.jpg' style='display:block; margin-left:auto; margin-right:auto'/>
+				  <div class="panel panel-info" id="centralPanel" style='display:none;'>
 				  </div>
 				  <div class="panel panel-info" id="map" style='display:none;'>
 				  </div>
@@ -145,6 +148,7 @@
 		<h3 class="panel-title"><%= title %></h3>
 	</div>
 	<div class="panel-body">
+		<% if (data.img != '') print ("<img style='width:100%;' src='data/speciesImg/"+data.img+"'/>"); %>
 		<% if (data.family != '') print ("<h4>Family</h4><ul class='list-group'><li class='list-group-item'>"+data.family+"</li></ul>"); %>
 		<h4>Common names</h4>
 		<ul class="list-group">
