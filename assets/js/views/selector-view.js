@@ -18,8 +18,9 @@ sharksDB.Views.Selector = Backbone.View.extend({
 					this.$('#countryDropdown').append(ddTemplate({type:'country', data:+d, name:sharksDB.Collections.countryInfoList[d].name}));
 				});
 
-			Object.keys(sharksDB.Collections.speciesList).sort().forEach(function(d) {
-				this.$('#speciesDropdown').append(ddTemplate({type:'species', data:d, name:d}));
+			Object.keys(sharksDB.Collections.speciesList).sort(function (a,b) { /* sort the species by alphabetical order on english name retrieved in the speciesInfoList */
+				return ((sharksDB.Collections.speciesInfoList[a].EN < sharksDB.Collections.speciesInfoList[b].EN)?-1:1);}).forEach(function(d) {
+				this.$('#speciesDropdown').append(ddTemplate({type:'species', data:d, name:sharksDB.Collections.speciesInfoList[d].EN}));
 				});
 
 			Object.keys(sharksDB.Collections.RFMOList).sort().forEach(function(d) {
@@ -30,11 +31,11 @@ sharksDB.Views.Selector = Backbone.View.extend({
 		render : function() {
 			/* get sub-elements country/species/rfmo and set their content */
 			this.$('#currentCountry').html((this.model.get('country')=='')?'Country':sharksDB.Collections.countryInfoList[this.model.get('country')].name);
-			this.$('#currentSpecies').html((this.model.get('species')=='')?'Species':this.model.get('species'));
+			this.$('#currentSpecies').html((this.model.get('species')=='')?'Species':sharksDB.Collections.speciesInfoList[this.model.get('species')].EN);
 			this.$('#currentRFMO').html((this.model.get('rfmo')=='')?'RFMO':this.model.get('rfmo'));
 
 			/* title reflects the selection */
-			$('#displayTitle').html((this.model.get('country')!='')?sharksDB.Collections.countryInfoList[this.model.get('country')].name:((this.model.get('species')!='')?this.model.get('species'):"<a target='_blank' href='"+sharksDB.Collections.RFMOInfoList[this.model.get('rfmo')].url+"'>"+sharksDB.Collections.RFMOInfoList[this.model.get('rfmo')].name+"</a>"));
+			$('#displayTitle').html((this.model.get('country')!='')?sharksDB.Collections.countryInfoList[this.model.get('country')].name:((this.model.get('species')!='')?sharksDB.Collections.speciesInfoList[this.model.get('species')].EN:"<a target='_blank' href='"+sharksDB.Collections.RFMOInfoList[this.model.get('rfmo')].url+"'>"+sharksDB.Collections.RFMOInfoList[this.model.get('rfmo')].name+"</a>"));
 			return this;
 		},
 
