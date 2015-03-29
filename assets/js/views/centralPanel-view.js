@@ -30,9 +30,12 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 			if (this.model.get('rfmo')!='') {
 				var rfmo = this.model.get('rfmo');
 				/* render rfmo table  */
-				this.$el.html(this.rfmoTemplate({dataArray: sharksDB.Collections.RFMOList[rfmo].sort(yearSort)}));
+				if (sharksDB.Collections.RFMOList[rfmo] != undefined) {
+					this.$el.html(this.rfmoTemplate({dataArray: sharksDB.Collections.RFMOList[rfmo].sort(yearSort)}));
+				} else {
+					this.$el.html(this.rfmoTemplate({dataArray: new Array()}));
+				}
 				/* render rfmo map */
-				//this.$el.append("<div id='map'></div>");
 				$('#map').show();
 				this.$el.show(); /* display the map div before loading the map to get correct dimension */
 
