@@ -51,18 +51,20 @@ window.sharksDB = {
 			});
 
 			/* populate SpeciesList */
-			if (!(d.species in sharksDB.Collections.speciesList)) {
-				sharksDB.Collections.speciesList[d.species] = new Array();
+			if (d.species != '') {
+				if (!(d.species in sharksDB.Collections.speciesList)) {
+					sharksDB.Collections.speciesList[d.species] = new Array();
+				}
+				sharksDB.Collections.speciesList[d.species].push({
+					type: d.type,
+					measure: d.measure,
+					rfmo: d.RFMO,
+					title: d.title,
+					description: d.description,
+					url: d.symbol,
+					year: d.year
+				});
 			}
-			sharksDB.Collections.speciesList[d.species].push({
-				type: d.type,
-				measure: d.measure,
-				rfmo: d.RFMO,
-				title: d.title,
-				description: d.description,
-				url: d.symbol,
-				year: d.year
-			});
 		})
 		.defer(d3.csv, "data/countryMembership.csv", function (d) {
 			if (+d.isonumcode != 0 && !isNaN(d.isonumcode)) { /* skip invalid country code */
@@ -84,7 +86,7 @@ window.sharksDB = {
 			}
 		})
 		.defer(d3.csv, "data/speciesSpecs.csv", function (d) {
-			if (!(d.name in sharksDB.Collections.speciesInfoList)) {
+			if ((!(d.name in sharksDB.Collections.speciesInfoList)) && (d.name != '')) {
 				sharksDB.Collections.speciesInfoList[d.name] = {
 					family: d.Family,
 					EN: d.EN,
