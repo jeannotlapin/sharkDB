@@ -42,10 +42,15 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 					} else { /* it is a species */
 						this.$el.html(this.speciesTemplate({title: this.model.get('species'), data: sharksDB.Collections.speciesInfoList[species]}));
 					}
+					/* if we have an image, set it in the modal div to display on clic on thumbnail */
+					if (sharksDB.Collections.speciesInfoList[species].img != '') {
+						$('#speciesImg').html("<img class='img-responsive' src='data/speciesImg/"+sharksDB.Collections.speciesInfoList[species].img+"'/>");
+					}
 				} else { /* is not in the species database, use object with empty fields */
 					this.$el.html(this.speciesTemplate({title: this.model.get('species'), data: {family:'', EN:'', FR:'', SP:'', description:'', factsheet:'', img:''}}));
 
 				}
+
 			}
 			if (this.model.get('rfmo')!='') {
 				var rfmo = this.model.get('rfmo');
