@@ -13,6 +13,7 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 
 		countryTemplate : _.template($('#countrySidePanel').html()),
 		speciesTemplate : _.template($('#speciesSidePanel').html()),
+		familyTemplate : _.template($('#familySidePanel').html()),
 		rfmoTemplate : _.template($('#rfmoSidePanel').html()),
 
 		render : function () {
@@ -26,8 +27,25 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 				}
 			}
 			if (this.model.get('species')!='') {
-				/* render species informations  */
-				this.$el.html(this.speciesTemplate({title: this.model.get('species'), data: ((this.model.get('species') in sharksDB.Collections.speciesInfoList)?sharksDB.Collections.speciesInfoList[this.model.get('species')]:{family:'', EN:'', FR:'', SP:'', description:'', factsheet:'', img:''})}));
+				var species = this.model.get('species');
+				/* check if selected species is actually a family : family field empty */
+				if (species in sharksDB.Collections.speciesInfoList) {
+					if (sharksDB.Collections.speciesInfoList[species].family == '') { /* it is a family */
+						/* get from the speciesInfoList all members of the family */
+						var familyMembers = {};
+						$.each(sharksDB.Collections.speciesInfoList, function (k,d){
+							if (d.family==species) {
+								familyMembers[k]=d;
+							}
+						});
+						this.$el.html(this.familyTemplate({title: this.model.get('species'), data: sharksDB.Collections.speciesInfoList[species], members: familyMembers}));
+					} else { /* it is a species */
+						this.$el.html(this.speciesTemplate({title: this.model.get('species'), data: sharksDB.Collections.speciesInfoList[species]}));
+					}
+				} else { /* is not in the species database, use object with empty fields */
+					this.$el.html(this.speciesTemplate({title: this.model.get('species'), data: {family:'', EN:'', FR:'', SP:'', description:'', factsheet:'', img:''}}));
+
+				}
 			}
 			if (this.model.get('rfmo')!='') {
 				var rfmo = this.model.get('rfmo');

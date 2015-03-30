@@ -66,6 +66,21 @@
 		position:relative;
 		border-top:none;
 	}
+
+	.noBorder {
+		border:none;
+	}
+
+	li.noBorder ul {
+		margin-bottom: 5px;
+		margin-top: 5px;
+	}
+
+	.familyTitle {
+		font-size: 125%;
+		font-weight: 500;
+	}
+
 	body {
 		background-image: url(img/opening.jpg);
 		background-size: 100%;
@@ -165,6 +180,56 @@
 		<% if (data.factsheet != '') print('<h4><a target="_blank" href="'+data.factsheet+'">Factsheet</h4>'); %>
 	</div>
 </script>
+
+<script type="text/template" id="familySidePanel">
+	<div class="panel-heading">
+		<h3 class="panel-title"><%= title %> family</h3>
+	</div>
+	<div class="panel-body">
+		<% if (data.img != '') print ("<img style='width:100%;' src='data/speciesImg/"+data.img+"'/>"); %>
+		<ul class="list-group">
+		<% _.each(members, function (d,k) { %>
+			<li class='list-group-item'><%= k %></li>
+		<% }) %>
+		</ul>
+
+		<h4>Common names</h4>
+		<ul class="list-group">
+			<li class='list-group-item noBorder'>
+				<img src='img/gb.png'/><span class='familyTitle'> <%= data.EN %></span>
+				<ul class="list-group">
+				<% _.each(members, function (d,k) { %>
+					<li class='list-group-item' title='<%= k %>'>
+						<%= d.EN %>
+					</li>
+				<% }) %>
+				</ul>
+			</li>
+			<li class='list-group-item noBorder'>
+				<img src='img/fr.png'/><span class='familyTitle'> <%= data.FR %></span>
+				<ul class="list-group">
+				<% _.each(members, function (d,k) { %>
+					<li class='list-group-item' title='<%= k %>'>
+						<%= d.FR %>
+					</li>
+				<% }) %>
+				</ul>
+			</li>
+			<li class='list-group-item noBorder'>
+				<img src='img/es.png'/><span class='familyTitle'> <%= data.SP %></span>
+				<ul class="list-group">
+				<% _.each(members, function (d,k) { %>
+					<li class='list-group-item' title='<%= k %>'>
+						<%= d.SP %>
+					</li>
+				<% }) %>
+				</ul>
+			</li>
+		</ul>
+		<% if (data.factsheet != '') print('<h4><a target="_blank" href="'+data.factsheet+'">Factsheet</h4>'); %>
+	</div>
+</script>
+
 
 <script type="text/template" id="rfmoSidePanel">
 	<div class="panel-heading">
