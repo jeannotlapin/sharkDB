@@ -341,7 +341,11 @@
 		<tr>
 			<td><% if (d.url!='') print("<a target='_blank' href='"+d.url+"'><img width='20px' src='img/link-icon.png'/></a>") %></td>
 			<td><%= d.type %></td>
-			<td class='doclink' data-species='<%= d.species %>'><%= d.species %></td>
+			<% if (d.species!='') {
+				print ("<td class='doclink' data-species='"+d.species+"'>"+d.species+"</td>");
+			} else {
+				print ("<td>All sharks in the area</td>");
+			} %>
 			<td><%= d.title %></td>
 			<td><%= d.description %></td>
 			<td><%= d.year %></td>
