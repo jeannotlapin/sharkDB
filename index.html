@@ -31,7 +31,7 @@
 	.dropdown-menu li a {
 		padding: 2px 13px;
 	}
-	.activeCountry, .activeRFMO{
+	.activeCountry, .activeRFMO, .activeSpecies{
 		background-color : #edf5fe;
 	}
 	.activeCountry:hover, .activeRFMO:hover, .doclink:hover{
@@ -175,7 +175,7 @@
 	</div>
 	<div class="panel-body">
 		<% if (data.img != '') print ("<img data-toggle='modal' data-target='#speciesModal' class='img-responsive' src='data/speciesImg/"+data.img+"'/>"); %>
-		<% if (data.family != '') print ("<h4>Family</h4><ul class='list-group'><li class='list-group-item'>"+data.family+"</li></ul>"); %>
+		<% if (data.family != '') print ("<h4>Family</h4><ul class='list-group'><li class='list-group-item activeSpecies' data-species='"+data.family+"'>"+data.family+"</li></ul>"); %>
 		<h4>Common names</h4>
 		<ul class="list-group">
 			<li class='list-group-item'>
@@ -210,7 +210,7 @@
 				<img src='img/gb.png'/><span class='familyTitle'> <%= data.EN %></span>
 				<ul class="list-group">
 				<% _.each(members, function (d,k) { %>
-					<li class='list-group-item' title='<%= k %>'>
+					<li class='list-group-item activeSpecies' data-species='<%= k %>' title='<%= k %>'>
 						<%= d.EN %>
 					</li>
 				<% }) %>

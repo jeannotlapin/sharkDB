@@ -8,7 +8,8 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 
 		events : {
 			"click li.activeCountry" : "toCountryView",
-			"click li.activeRFMO" : "toRFMOView"
+			"click li.activeRFMO" : "toRFMOView",
+			"click li.activeSpecies" : "toSpeciesView"
 		},
 
 		countryTemplate : _.template($('#countrySidePanel').html()),
@@ -68,6 +69,10 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 
 		toCountryView : function (e) {
 			this.model.set({country: e.target.dataset.countryid, rfmo: '', species: ''});
+		},
+
+		toSpeciesView : function (e) {
+			this.model.set({species: e.target.dataset.species, rfmo: '', country: ''});
 		},
 
 		toRFMOView : function (e) {
