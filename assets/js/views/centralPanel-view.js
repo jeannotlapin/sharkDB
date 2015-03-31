@@ -23,9 +23,44 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 				this.$el.show();
 			}
 			if (this.model.get('species')!='') {
+				var species = this.model.get('species');
 				/* render species table  */
-				this.$el.html(this.speciesTemplate({dataArray: sharksDB.Collections.speciesList[this.model.get('species')].sort(yearSort)}));
-				this.$el.show();
+				if (sharksDB.Collections.speciesList[this.model.get('species')] != undefined) {
+					this.$el.html(this.speciesTemplate({dataArray: sharksDB.Collections.speciesList[species].sort(yearSort)}));
+				} else {
+					this.$el.html(this.speciesTemplate({dataArray: new Array()}));
+				}
+				/* render distribution map if exists */
+				if (sharksDB.Collections.speciesInfoList[species].map != '') {
+					$('#map').show();
+					this.$el.show(); /* display the map div before loading the map to get correct dimension */
+
+					/* load map from mapbox if needed */
+					if (sharksDB.Map.map == undefined) {
+						setBackgroundMap();
+					} else { /* map was already loaded, we must clean countries and zone layers before adding new ones */
+						if ($('#layerCountries')) {
+							$('#layerCountries').remove();/* remove countries layer(the svg added using d3 with id layerCountries) */
+						}
+						sharksDB.Map.map.removeLayer(sharksDB.Map.maritimeZoneLayer); /* remove the wms tile of rfmo competence zone */
+					}
+					sharksDB.Map.map.setView([25,0], 2);
+
+					/* add the distribution area from FAO server */
+					sharksDB.Map.maritimeZoneLayer = L.tileLayer.wms('http://www.fao.org/figis/geoserver/wms', {
+							dpiMode: 7,
+							layers: 'species:SPECIES_DIST_'+sharksDB.Collections.speciesInfoList[species].map,
+							featureCount: 10,
+							format: 'image/png',
+							transparent: true,
+							zIndex: 1
+						})
+						.setOpacity(0.85)
+						.addTo(sharksDB.Map.map);
+				} else {
+					this.$el.show();
+				}
+
 			}
 			if (this.model.get('rfmo')!='') {
 				var rfmo = this.model.get('rfmo');
@@ -41,28 +76,30 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 
 				/* load map from mapbox if needed */
 				if (sharksDB.Map.map == undefined) {
-					sharksDB.Map.map = L.mapbox.map('map', 'jeannotlapin.lcld15nl', {worldCopyJump: true});
+					setBackgroundMap();
+				} else { /* map was already loaded, we must clean countries and zone layers before adding new ones */
+					if ($('#layerCountries')) {
+						$('#layerCountries').remove();/* remove countries layer(the svg added using d3 with id layerCountries) */
+					}
+					sharksDB.Map.map.removeLayer(sharksDB.Map.maritimeZoneLayer); /* remove the wms tile of rfmo competence zone */
+				}
+				sharksDB.Map.map.setView(sharksDB.Collections.RFMOInfoList[rfmo].map, 2);
 
-					/* add the 200nm limit from FAO server */
-					var nm200Layer = L.tileLayer.wms('http://www.fao.org/figis/geoserver/wms', {
+				/* add the competence area from FAO server */
+				sharksDB.Map.maritimeZoneLayer = L.tileLayer.wms('http://www.fao.org/figis/geoserver/wms', {
 							dpiMode: 7,
-							layers: 'fifao:limit_200nm',
+							layers: 'rfb:RFB_'+rfmo,
 							featureCount: 10,
 							format: 'image/png',
 							transparent: true,
+							zIndex: 1
 						})
 						.setOpacity(0.15)
 						.addTo(sharksDB.Map.map);
 
-				} else { /* map was already loaded, we must clean countries and zone layers before adding new ones */
-					$('#rfmoCountries').remove();/* remove countries layer(the svg added using d3 with id rfmoCountries) */
-					sharksDB.Map.map.removeLayer(sharksDB.Map.rfmoLayer); /* remove the wms tile of rfmo competence zone */
-				}
-				sharksDB.Map.map.setView(sharksDB.Collections.RFMOInfoList[rfmo].map, 2);
-
 				/* add countries highlighting layer using d3 */
 				var ue = ($.inArray(rfmo, sharksDB.Collections.countryInfoList[1001].rfmo) != -1); /* UE have the arbitrary 1001 iso code in the DB */
-				var svg = d3.select(sharksDB.Map.map.getPanes().overlayPane).append("svg").attr("id", "rfmoCountries"),
+				var svg = d3.select(sharksDB.Map.map.getPanes().overlayPane).append("svg").attr("id", "layerCountries"),
 				g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 				d3.json("data/geodata/countries110.json", function(collection) {
@@ -117,18 +154,6 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 						this.stream.point(point.x, point.y);
 					}
 				});
-
-				/* add the competence area from FAO server */
-				sharksDB.Map.rfmoLayer = L.tileLayer.wms('http://www.fao.org/figis/geoserver/wms', {
-							dpiMode: 7,
-							layers: 'rfb:RFB_'+rfmo,
-							featureCount: 10,
-							format: 'image/png',
-							transparent: true,
-						})
-						.setOpacity(0.15)
-						.addTo(sharksDB.Map.map);
-
 			}
 			return this;
 		},
@@ -148,3 +173,19 @@ function yearSort(a,b) {
 	 return -1;
 }
 
+/* Load background map and 200nm limit WMS layer from FAO server */
+function setBackgroundMap() {
+	sharksDB.Map.map = L.mapbox.map('map', 'jeannotlapin.lcld15nl', {worldCopyJump: true});
+
+	/* add the 200nm limit from FAO server */
+	var nm200Layer = L.tileLayer.wms('http://www.fao.org/figis/geoserver/wms', {
+			dpiMode: 7,
+			layers: 'fifao:limit_200nm',
+			featureCount: 10,
+			format: 'image/png',
+			transparent: true,
+			zIndex: 5
+		})
+		.setOpacity(0.20)
+		.addTo(sharksDB.Map.map);
+}
