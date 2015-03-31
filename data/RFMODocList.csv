@@ -1,4 +1,4 @@
-type,measure,RFMO,species,year,title,description,symbol,
+type,measure,RFMO,species,year,title,description,symbol,url
 recommendation,prohibited species,ICCAT,Carcharhinus longimanus,2010,RECOMMENDATION BY ICCAT ON THE CONSERVATION OF OCEANIC WHITETIP SHARK CAUGHT IN ASSOCIATION WITH FISHERIES IN THE ICCAT CONVENTION AREA,,ICCAT_2010_07,http://www.iccat.es/Documents%5CRecs%5Ccompendiopdf-e%5C2010-07-e.pdf
 recommendation,prohibited species,ICCAT,Sphyrnidae,2010,RECOMMENDATION BY ICCAT ON HAMMERHEAD SHARKS (FAMILY SPHYRNIDAE) CAUGHT IN ASSOCIATION WITH FISHERIES MANAGED BY ICCAT,,ICCAT_2010_08,http://www.iccat.es/Documents%5CRecs%5Ccompendiopdf-e%5C2010-08-e.pdf
 conservation measure,catch measure,SEAFO,,2006,Conservation Measure 04/06 on the Conservation of Sharks Caught in Association with Fisheries Managed by SEAFO,,CM04_06,http://bmis.wcpfc.int/docs/decisions/SEAFO_sharks_CM_04-06_consSharks_approved4Oct2006.pdf

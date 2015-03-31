@@ -9,17 +9,17 @@ Family,name,EN,FR,SP,Description,factsheet,map,img
 ,,,,,,,,
 ,,,,,,,,
 ,,,,,,,,
-Sphyrnidae,Sphyrna lewini,Scalloped hammerhead,Requin-marteau halicorne,Cornuda común,,http://www.fao.org/fishery/species/2028/en,,
+Sphyrnidae,Sphyrna lewini,Scalloped hammerhead,Requin-marteau halicorne,Cornuda común,,http://www.fao.org/fishery/species/2028/en,,Sphyrna_lewini_2028_1.gif
 Sphyrnidae,Sphyrna mokarran,Great hammerhead,Grand requin marteau,Cornuda gigante,,,,
-Sphyrnidae,Sphyrna zygaena,Smooth hammerhead,Requin-marteau commun,Cornuda cruz(=Pez martillo),,,,
-Alopiidae,Alopias vulpinus,Thresher,Renard,Zorro,,http://www.fao.org/fishery/species/2008/en,,
-Alopiidae,Alopias pelagicus,Pelagic thresher,Renard pélagique,Zorro pelágico,,http://www.fao.org/fishery/species/2009/en,,
-Alopiidae,Alopias superciliosus,Bigeye thresher,Renard à gros yeux,Zorro ojón,,http://www.fao.org/fishery/species/2795/en,,
+Sphyrnidae,Sphyrna zygaena,Smooth hammerhead,Requin-marteau commun,Cornuda cruz(=Pez martillo),,,SPZ,
+Alopiidae,Alopias vulpinus,Thresher,Renard,Zorro,,http://www.fao.org/fishery/species/2008/en,ALV,Alopias_vulpinus_pri_2008_1.jpg
+Alopiidae,Alopias pelagicus,Pelagic thresher,Renard pélagique,Zorro pelágico,,http://www.fao.org/fishery/species/2009/en,PTH,Alopias_pelagicus_2009_1.gif
+Alopiidae,Alopias superciliosus,Bigeye thresher,Renard à gros yeux,Zorro ojón,,http://www.fao.org/fishery/species/2795/en,BTH,Alopias_superciliosus_2795_1.gif
 Carcharhinidae,Carcharhinus longimanus,Oceanic whitetip shark,Requin océanique,Tiburón oceánico,,,,
-Lamnidae,Lamna nasus,Porbeagle,Porbeagle,Marrajo sardinero,,http://www.fao.org/fishery/species/2798/en,,
-Lamnidae,Isurus oxyrinchus,Shortfin mako,Taupe bleue,Marrajo dientuso,,http://www.fao.org/fishery/species/2011/en,,
-Cetorhinidae,Cetorhinus maximus,Basking shark,Pèlerin,Peregrino,,http://www.fao.org/fishery/species/2005/en,,
+Lamnidae,Lamna nasus,Porbeagle,Porbeagle,Marrajo sardinero,,http://www.fao.org/fishery/species/2798/en,POR,Lamna_nasus_pri_2798_1.jpg
+Lamnidae,Isurus oxyrinchus,Shortfin mako,Taupe bleue,Marrajo dientuso,,http://www.fao.org/fishery/species/2011/en,SMA,Isurus_oxyrinchus_pri_2011_1.jpg
+Cetorhinidae,Cetorhinus maximus,Basking shark,Pèlerin,Peregrino,,http://www.fao.org/fishery/species/2005/en,BSK,Cetorhinus_maximus_pri_2005_1.jpg
 Carcharhinidae,Prionace glauca,Blue shark,Peau bleue,Tiburón azul,,http://www.fao.org/fishery/species/2018/en,,Prionace_glauca_pri_2018_1.jpg
 Carcharhinidae,Carcharhinus falciformis,Silky shark,Requin soyeux,Tiburón jaquetón,,http://www.fao.org/fishery/species/2021/en,,Carcharhinus_falciformis_pri_2021_1.jpg
 Sphyrnidae,Eusphyra blochii,Winghead shark,Requin-marteau planeur,Cornuda planeadora,,,,
-Rajidae,Raja clavata,Thornback ray,Raie bouclée,Raya de clavos,,,,
+Rajidae,Raja clavata,Thornback ray,Raie bouclée,Raya de clavos,,,RJC,

@@ -17,7 +17,7 @@ window.sharksDB = {
 		/* maps: initialise mapbox token and set to undefined map and rfmoLayer variables */
 		L.mapbox.accessToken = 'pk.eyJ1IjoiamVhbm5vdGxhcGluIiwiYSI6Im5qNTl1QXcifQ.fex2-4xMOYtkSgwtkwRGBQ';
 		sharksDB.Map.map = undefined; /* this is useless, just to keep track of properties used in the Map object */
-		sharksDB.Map.rfmoLayer = undefined;
+		sharksDB.Map.maritimeZoneLayer = undefined;
 
 
 		queue(2)
@@ -46,7 +46,7 @@ window.sharksDB = {
 				species: d.species,
 				title: d.title,
 				description: d.description,
-				url: d.symbol,
+				url: d.url,
 				year: d.year
 			});
 
@@ -61,7 +61,7 @@ window.sharksDB = {
 					rfmo: d.RFMO,
 					title: d.title,
 					description: d.description,
-					url: d.symbol,
+					url: d.url,
 					year: d.year
 				});
 			}
