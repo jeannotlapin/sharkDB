@@ -107,10 +107,7 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 					path = d3.geo.path().projection(transform);
 
 					var feature = g.selectAll("path")
-						.data(collection.features)
-						.enter()
-						.append("path")
-						.filter(function (d){
+						.data(collection.features.filter(function (d){
 							/* check country */
 							if (+d.properties.iso_n3 in sharksDB.Collections.countryInfoList && sharksDB.Collections.countryInfoList[+d.properties.iso_n3] != undefined) {
 								if ($.inArray(rfmo, sharksDB.Collections.countryInfoList[+d.properties.iso_n3].rfmo) != -1) {
@@ -123,7 +120,9 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 								return true;
 							}
 							return false;
-						})
+						}))
+						.enter()
+						.append("path")
 						.style("fill", "#3dd5a8")
 						.style("fill-opacity", 0.25)
 						.style("stroke", "#3dd5a8")
