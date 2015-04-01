@@ -29,6 +29,7 @@ window.sharksDB = {
 				sharksDB.Collections.countryList[+d.isonumcode].push({
 					type: d.type,
 					title: d.title,
+					status: d.status,
 					description: d.description,
 					url: d.url,
 					year: d.year

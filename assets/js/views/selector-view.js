@@ -35,7 +35,16 @@ sharksDB.Views.Selector = Backbone.View.extend({
 			this.$('#currentRFMO').html((this.model.get('rfmo')=='')?'RFMO':this.model.get('rfmo'));
 
 			/* title reflects the selection */
-			$('#displayTitle').html((this.model.get('country')!='')?sharksDB.Collections.countryInfoList[this.model.get('country')].name:((this.model.get('species')!='')?sharksDB.Collections.speciesInfoList[this.model.get('species')].EN:"<a target='_blank' href='"+sharksDB.Collections.RFMOInfoList[this.model.get('rfmo')].url+"'>"+sharksDB.Collections.RFMOInfoList[this.model.get('rfmo')].name+"</a>"));
+			if ((this.model.get('country')!='')) {
+				$('#displayTitle').html(sharksDB.Collections.countryInfoList[this.model.get('country')].name);
+			} else if ((this.model.get('species')!='')) {
+				$('#displayTitle').html(sharksDB.Collections.speciesInfoList[this.model.get('species')].EN);
+			} else if ((this.model.get('rfmo')!='')) {
+				$('#displayTitle').html("<a target='_blank' href='"+sharksDB.Collections.RFMOInfoList[this.model.get('rfmo')].url+"'>"+sharksDB.Collections.RFMOInfoList[this.model.get('rfmo')].name+"</a>");
+			} else {
+				$('#displayTitle').html('');
+			}
+
 			return this;
 		},
 

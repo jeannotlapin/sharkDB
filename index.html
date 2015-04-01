@@ -127,7 +127,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">Shark Database</a>
+      <a class="navbar-brand" onclick="sharksDB.Models.currentState.set({country:'', rfmo:'', species:''})" href="#">Shark Database</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -218,7 +218,7 @@
 		<% if (data.img != '') print ("<img data-toggle='modal' data-target='#myModal' class='img-responsive' src='data/speciesImg/"+data.img+"'/>"); %>
 		<ul class="list-group">
 		<% _.each(members, function (d,k) { %>
-			<li class='list-group-item'><%= k %></li>
+			<li class='list-group-item activeSpecies'' data-species='<%= k %>'><%= k %></li>
 		<% }) %>
 		</ul>
 
@@ -280,6 +280,7 @@
 		<tr class="tableHeader">
 			<th class='linkCol'></th>
 			<th>Type</th>
+			<th>Status</th>
 			<th>Title</th>
 			<th>Description</th>
 			<th>Year</th>
@@ -290,6 +291,7 @@
 		<tr>
 			<td><% if (d.url!='') print("<a target='_blank' href='"+d.url+"'><img width='20px' src='img/link-icon.png'/></a>") %></td>
 			<td><%= d.type %></td>
+			<td><%= d.status %>
 			<td><%= d.title %></td>
 			<td><%= d.description %></td>
 			<td><%= d.year %></td>

@@ -26,7 +26,9 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 				} else {
 					this.$el.html(this.countryTemplate({title: 'Member of', dataArray: sharksDB.Collections.countryInfoList[this.model.get('country')].rfmo}));
 				}
+				this.$el.show();
 			}
+
 			if (this.model.get('species')!='') {
 				var species = this.model.get('species');
 				/* check if selected species is actually a family : family field empty */
@@ -51,8 +53,9 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 					this.$el.html(this.speciesTemplate({title: this.model.get('species'), data: {family:'', EN:'', FR:'', SP:'', description:'', factsheet:'', img:''}}));
 
 				}
-
+				this.$el.show();
 			}
+
 			if (this.model.get('rfmo')!='') {
 				var rfmo = this.model.get('rfmo');
 				/* render rfmo members(with links to the one having documents)  */
@@ -62,8 +65,8 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 							memberList.push({name : d.name, isonumcode:k, countryname: sharksDB.Collections.countryInfoList[k].name, link: (k in sharksDB.Collections.countryList)?1:0});
 						}});
 				this.$el.html(this.rfmoTemplate({title: 'Members', dataArray: memberList.sort(function(a,b){return (a.name<b.name)?-1:1})}));
+				this.$el.show();
 			}
-			this.$el.show();
 			return this;
 		},
 
