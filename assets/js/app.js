@@ -3,6 +3,7 @@ window.sharksDB = {
 	Views:{},
 	Collections:{},
 	Map:{},
+	Routers:{},
 
 	initialize : function () {
 		sharksDB.Collections.countryList = new Array();
@@ -109,6 +110,8 @@ window.sharksDB = {
 function ready(error, results) {
 	/* Instantiate views, it will create dropdown from keys of the dataset */
 	new sharksDB.Views.App();
+	new sharksDB.Routers.App();
+	Backbone.history.start();
 }
 
 function centerModal() {
