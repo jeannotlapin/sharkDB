@@ -1,11 +1,10 @@
 type,country,isonumcode,status,year,title,description,url
 NPOA,Indonesia,360,adopted,2010,D001_Indonesia2010.pdf,,D001_Indonesia2010.pdf
-NPOA,,#N/A,,,,,
 NPOA,Spain,724,adopted,2009,D003_EU2009.pdf,,D003_EU2009.pdf
 NPOA,United Kingdom,826,,2004,Plan of Action for the Conservation and Management of Sharks in UK Waters,,http://jncc.defra.gov.uk/pdf/jncc360.pdf
 NPOA,Argentina,032,adopted,2009,ur,,ftp://ftp.fao.org/FI/DOCUMENT/IPOAS/national/argentina/NPOA_sharks.pdf
 NPOA,Mexico,484,adopted,2004,"Plan de Acción Nacional para el Manejo y Conservación de Tiburones, Rayas y Especies Afines en México",,ftp://ftp.fao.org/FI/DOCUMENT/IPOAS/national/mexico/PANMCT_VERSIONFINAL.pdf
-NPOA,United States of America,581,adopted,2001,United States National Plan of Action for the Conservation and Management of Sharks,,http://www.nmfs.noaa.gov/sfa/Final%20NPOA.February.2001.htm
+NPOA,United States of America,840,adopted,2001,United States National Plan of Action for the Conservation and Management of Sharks,,http://www.nmfs.noaa.gov/sfa/Final%20NPOA.February.2001.htm
 NPOA,Japan,392,,2012,NPOA–Shark assessment implementation report submitted to COFI in July 2012,,
 NPOA,Malaysia,458,adopted,2006,D009_Malaysia2006.pdf,,D009_Malaysia2006.pdf
 NPOA,Japan,392,adopted,2001,D010_Japan2001.pdf,,D010_Japan2001.pdf
@@ -32,7 +31,7 @@ NPOA,Senegal,686,adopted,2005,D030_Senegal2005.pdf,,D030_Senegal2005.pdf
 NPOA,Venezuela (Bolivarian Republic of),862,nonofficial,2006,D031_Venezuela2006.pdf,,D031_Venezuela2006.pdf
 NPOA,Belize,084,draft,2005,D032_Belize2005.pdf,,D032_Belize2005.pdf
 NPOA,Chile,152,draft,2006,D033_Chile2006.pdf,,D033_Chile2006.pdf
-NPOA,Colombia,156,,2010,D034_Colombia2010.pdf,,D034_Colombia2010.pdf
+NPOA,Colombia,170,,2010,D034_Colombia2010.pdf,,D034_Colombia2010.pdf
 NPOA,Ecuador,218,,2005,PLAN DE ACCIÓN NACIONAL DE TIBURONES,,ftp://ftp.fao.org/FI/DOCUMENT/IPOAS/national/ecuador/PlandeAccionTiburonesPAT-Ec.pdf
 NPOA,Gambia,270,draft,,D036_Gambia.pdf,,D036_Gambia.pdf
 NPOA,Guatemala,320,draft,2008,D037_Guatemala2008.pdf,,D037_Guatemala2008.pdf
@@ -40,8 +39,8 @@ NPOA,Guinea-Bissau,624,adopted,2007,D038_Guinea-Bissau2007.pdf,,D038_Guinea-Biss
 NPOA,Philippines,608,adopted,2009,D039_Philippines2009.pdf,,D039_Philippines2009.pdf
 NPOA,Seychelles,690,adopted,2007,SEYCHELLES NATIONAL PLAN OF ACTION FOR THE CONSERVATION AND MANAGEMENT OF SHARKS,,ftp://ftp.fao.org/FI/DOCUMENT/IPOAS/national/seychelles/SeychellesNPOA_Sharks.pdf
 NPOA,Uruguay,858,adopted,2008,Plan de Acción Nacional para la Conservación de Condrictios en las Pesquerías Uruguayas (PAN - Condrictios Uruguay),,ftp://ftp.fao.org/FI/DOCUMENT/IPOAS/national/uruguay/PAN_sharks.pdf
-NPOA,Costa Rica,156,draft,2005,D042_CostaRica2005.pdf,,D042_CostaRica2005.pdf
-NPOA,Costa Rica,156,adopted,2010,D043_CostaRica2010.pdf,,D043_CostaRica2010.pdf
+NPOA,Costa Rica,188,draft,2005,D042_CostaRica2005.pdf,,D042_CostaRica2005.pdf
+NPOA,Costa Rica,188,adopted,2010,D043_CostaRica2010.pdf,,D043_CostaRica2010.pdf
 NPOA,Cape Verde,132,draft,2005,D044_CaboVerde2005.pdf,,D044_CaboVerde2005.pdf
 NPOA,South Africa,710,adopted,2013,D045_SouthAfrica2013.pdf,,D045_SouthAfrica2013.pdf
 NPOA,Bangladesh,050,in progress,,,,
