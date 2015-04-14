@@ -38,11 +38,9 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 					/* load map from mapbox if needed */
 					if (sharksDB.Map.map == undefined) {
 						setBackgroundMap();
-					} else { /* map was already loaded, we must clean countries and zone layers before adding new ones */
-						if ($('#layerCountries')) {
-							$('#layerCountries').remove();/* remove countries layer(the svg added using d3 with id layerCountries) */
-						}
+					} else { /* map was already loaded, we must clean zone layer before adding new one */
 						sharksDB.Map.map.removeLayer(sharksDB.Map.maritimeZoneLayer); /* remove the wms tile of rfmo competence zone */
+						d3.select("#layerCountries").selectAll("g").remove(); /* remove all highlighted countries if needed */
 					}
 					sharksDB.Map.map.setView([25,0], 2);
 
@@ -77,10 +75,7 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 				/* load map from mapbox if needed */
 				if (sharksDB.Map.map == undefined) {
 					setBackgroundMap();
-				} else { /* map was already loaded, we must clean countries and zone layers before adding new ones */
-					if ($('#layerCountries')) {
-						$('#layerCountries').remove();/* remove countries layer(the svg added using d3 with id layerCountries) */
-					}
+				} else { /* map was already loaded, we must clean zone layers before adding new one */
 					sharksDB.Map.map.removeLayer(sharksDB.Map.maritimeZoneLayer); /* remove the wms tile of rfmo competence zone */
 				}
 				sharksDB.Map.map.setView(sharksDB.Collections.RFMOInfoList[rfmo].map, 2);
@@ -99,14 +94,14 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 
 				/* add countries highlighting layer using d3 */
 				var ue = ($.inArray(rfmo, sharksDB.Collections.countryInfoList[1001].rfmo) != -1); /* UE have the arbitrary 1001 iso code in the DB */
-				var svg = d3.select(sharksDB.Map.map.getPanes().overlayPane).append("svg").attr("id", "layerCountries"),
-				g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 				d3.json("data/geodata/countries110.json", function(collection) {
 					var transform = d3.geo.transform({point: projectPoint}),
 					path = d3.geo.path().projection(transform);
-
-					var feature = g.selectAll("path")
+					var transform2 = d3.geo.transform({point: projectPoint2}),
+					path2 = d3.geo.path().projection(transform2);
+					
+					var selectedCountries = d3.select("#layerCountries").selectAll("g")
 						.data(collection.features.filter(function (d){
 							/* check country */
 							if (+d.properties.iso_n3 in sharksDB.Collections.countryInfoList && sharksDB.Collections.countryInfoList[+d.properties.iso_n3] != undefined) {
@@ -120,38 +115,37 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 								return true;
 							}
 							return false;
-						}))
-						.enter()
-						.append("path")
-						.style("fill", "#3dd5a8")
-						.style("fill-opacity", 0.25)
-						.style("stroke", "#3dd5a8")
-						.style("stroke-opacity", 0.5);
+						}),
+						function (d){return d.properties.iso_n3});
+
+					selectedCountries.exit().remove(); /* on selection exit remove the g element */
+
+					var countryGroups =selectedCountries.enter() /* append a g element on enter */
+						.append("g");
+
+					var countryPathsWorld1 = countryGroups.append("path"); /* on enter: append 2 path elements in each g one : duplicate the world at +360 */
+					var countryPathsWorld2 = countryGroups.append("path");
 
 					sharksDB.Map.map.on("viewreset", reset);
-					reset();
 
-					// Reposition the SVG to cover the features.
+					/* Draw the SVG paths for countries. */
 					function reset() {
-						var bounds = path.bounds(collection),
-						topLeft = bounds[0],
-						bottomRight = bounds[1];
-
-						svg.attr("width", bottomRight[0] - topLeft[0])
-							.attr("height", bottomRight[1] - topLeft[1])
-							.style("left", topLeft[0] + "px")
-							.style("top", topLeft[1] + "px");
-
-						g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
-
-						feature.attr("d", path);
+						countryPathsWorld1.attr("d", path); /* on current world [-180,180]*/
+						countryPathsWorld2.attr("d", path2); /* on another world [180, 540]*/
+						sharksDB.Map.map._updateSvgViewport(); /* make sure we update correctly svg layer translate attribute */
 					}
 
-					// Use Leaflet to implement a D3 geometric transformation.
+					/* Use Leaflet to implement a D3 geometric transformation */
 					function projectPoint(x, y) {
 						var point = sharksDB.Map.map.latLngToLayerPoint(new L.LatLng(y, x));
 						this.stream.point(point.x, point.y);
 					}
+					function projectPoint2(x, y) {
+						var point2 = sharksDB.Map.map.latLngToLayerPoint(new L.LatLng(y, x+360)); /* project on a world translated by 360° */
+						this.stream.point(point2.x, point2.y);
+					}
+
+					reset();
 				});
 			}
 			return this;
@@ -174,7 +168,14 @@ function yearSort(a,b) {
 
 /* Load background map and 200nm limit WMS layer from FAO server */
 function setBackgroundMap() {
-	sharksDB.Map.map = L.mapbox.map('map', 'jeannotlapin.lcld15nl', {worldCopyJump: true});
+	sharksDB.Map.map = L.mapbox.map('map', 'jeannotlapin.lcld15nl', {worldCopyJump: false}).setView([0,0], 2);
+
+	/* initialise svg layer */
+	sharksDB.Map.map._initPathRoot();
+	var svg = d3.select("#map").select("svg"),
+	    g = svg.append("g").attr("id", "layerCountries");
+	g.classed('countryHigh', true); /* set class to layerCountries g element */
+
 
 	/* add the 200nm limit from FAO server */
 	var nm200Layer = L.tileLayer.wms('http://www.fao.org/figis/geoserver/wms', {
