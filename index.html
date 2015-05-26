@@ -165,23 +165,32 @@
 	span.langAbv {
 		color: #888888;
 	}
+	div.commonName {
+		font-weight: 500;
+		font-size: 110%;
+	}
 	div.scientificName {
 		text-transform: capitalize;
-		text-indent:1.2em;
 		font-style: italic;
 		color: #888888;
-		font-size:110%;
 	}
 	#displayTitle {
 		margin-top:0;
 	}
 
 	.ddthumbnail img{
-		width: 22px;
+		width: 24px;
 		border: 1px solid #24a6cf;
 		border-radius: 4px;
 		margin-right:3px;
 		opacity: 0.9;
+	}
+
+	.speciesFamilyThumbnail {
+		width: 30px;
+		border: 1px solid #24a6cf;
+		border-radius: 4px;
+		margin-right:3px;
 	}
 
 	#speciesGroupsDropdown li a,
@@ -282,7 +291,7 @@
 	</div>
 	<div class="panel-body">
 		<img  data-toggle='modal' data-target='#speciesModal' class='img-responsive' src='http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/species/<%= data.scientificName.toLowerCase().replace(/ /g, "_")%>-drawing-medium.png'>
-		<% if (data.groupCode != 0) print ("<h4>Group</h4><ul class='list-group'><li class='list-group-item activeSpecies' data-species='"+data.groupCode+"'>"+sharksDB.Collections.speciesGroupsCollection.get(data.groupCode).get('name')+"</li></ul>"); %>
+		<% if (data.groupCode != 0) print ("<h4>Group</h4><ul class='list-group'><li class='list-group-item activeSpecies' data-species='"+data.groupCode+"'><img class='speciesFamilyThumbnail' src='http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/groups/"+sharksDB.Collections.speciesGroupsCollection.get(data.groupCode).get('name').toLowerCase().replace(/ /g, "_")+"-drawing-small.jpg'/>"+sharksDB.Collections.speciesGroupsCollection.get(data.groupCode).get('name')+"</li></ul>"); %>
 		<h4>Common names</h4>
 		<ul class="list-group">
 			<% if (data.officialNames.ar != undefined) print ("<li class='list-group-item'><span class='langAbv'>Ar: </span>"+data.officialNames.ar+"</li>"); %>
@@ -304,7 +313,7 @@
 		<img  data-toggle='modal' data-target='#speciesModal' class='img-responsive' src='http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/groups/<%= title.toLowerCase().replace(/ /g, "_")%>-drawing-medium.png'>
 		<ul class="list-group">
 		<% _.each(data, function (d) { %>
-			<li class='list-group-item activeSpecies' data-species='<%= d.alphaCode %>'><%= d.englishName %><div data-species='<%= d.alphaCode %>' class='scientificName'><%= d.scientificName %></div></li>
+			<li class='list-group-item activeSpecies' data-species='<%= d.alphaCode %>'><div data-species='<%= d.alphaCode %>' class='commonName'><%= d.englishName %></div><div data-species='<%= d.alphaCode %>' class='scientificName'><img class='speciesFamilyThumbnail' src='http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/species/<%= d.scientificName.toLowerCase().replace(/ /g, "_")%>-drawing-small.jpg' /><%= d.scientificName %></div></li>
 		<% }) %>
 		</ul>
 	</div>
