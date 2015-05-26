@@ -46,12 +46,64 @@
 	}
 	ul.doubleCol {
 		width:32em;
+		padding:0;
+		clear:both;
 	}
+
 	ul.doubleCol li {
 		width: 50%;
-		float: left;
+		height: auto;
 		overflow: hidden;
 	}
+
+	ul.doubleCol li:nth-child(odd) {
+		float: left;
+	}
+
+	.doubleCol > li > a, .doubleCol > li > a:focus {
+		clear: both;
+		color: #ffffff;
+		padding: 2px 13px;
+		display: block;
+		line-height: 1.4;
+		white-space: nowrap;
+		background-color: transparent;
+		font-size: 13px;
+		font-weight: 300;
+		text-decoration:none;
+	}
+
+	ul.speciesGroups > li > a, ul.speciesGroups > li > a:focus {
+		font-weight: 600;
+	}
+
+	li.species {
+		border-top: 1px solid white;\
+		background-color: #067fa2;
+	}
+	.navbar-default ul.dropdown-menu li ul.species > li {
+		background-color: #067fa2;
+	}
+
+	ul.species > li > a:hover {
+		background-color: #24a6cf !important;
+	}
+
+	a.selectedSpecies {
+		background-color: #24a6cf !important;
+	}
+
+	.navbar-default ul.dropdown-menu li ul.species > li > a {
+		background-color: #067fa2;
+	}
+
+	li.species, ul.species {
+		background-color: #067fa2;
+		display: block;
+		clear:both;
+		width: 100%;
+	}
+
 
 	.linkCol {
 		width: 2.5em;
@@ -89,6 +141,7 @@
 	.navbar-default {
 		background-color:#24a6cf;
 		font-size:115%;
+		margin-bottom:0.2em;
 	}
 
 	.navbar-default .navbar-nav li a:focus, .navbar-default .navbar-nav li a:hover, .navbar-default .navbar-nav li.open a, .navbar-default .navbar-nav li.open a:focus,.navbar-default .navbar-nav li.open a.dropdown-toggle:hover {
@@ -98,8 +151,8 @@
 		background-color:#24a6cf;
 	}
 
-	ul.dropdown-menu {
-		background-color:#00789b !important;
+	.navbar-default ul.dropdown-menu {
+		background-color:#00789b;
 		border-top-right-radius: 9px !important;
 		border-bottom-right-radius: 9px !important;
 	}
@@ -108,6 +161,33 @@
 		fill-opacity:0.25;
 		stroke:#3dd5a8;
 		stroke-opacity: 0.5;
+	}
+	span.langAbv {
+		color: #888888;
+	}
+	div.scientificName {
+		text-transform: capitalize;
+		text-indent:1.2em;
+		font-style: italic;
+		color: #888888;
+		font-size:110%;
+	}
+	#displayTitle {
+		margin-top:0;
+	}
+
+	.ddthumbnail img{
+		width: 22px;
+		border: 1px solid #24a6cf;
+		border-radius: 4px;
+		margin-right:3px;
+		opacity: 0.9;
+	}
+
+	#speciesGroupsDropdown li a,
+	#speciesListDropdown li a {
+		padding: 1px;
+		padding-left: 3px;
 	}
     </style>
 </head>
@@ -140,12 +220,15 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul id="navSelector" class="nav navbar-nav">
         <li class="dropdown">
-	<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentSpecies">Species</span><span class="caret"></span></a>
-	<ul class="dropdown-menu" role="menu" id="speciesDropdown"></ul>
-        </li>
-        <li class="dropdown">
 	<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentRFMO">RFMO</span><span class="caret"></span></a>
 	<ul class="dropdown-menu" role="menu" id="RFMODropdown"></ul>
+        </li>
+        <li class="dropdown">
+	<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentSpeciesGroup">Species</span><span class="caret"></span></a>
+	<ul class="dropdown-menu" role="menu">
+		<li class="speciesGroups"><ul class="doubleCol speciesGroups" role="menu" id="speciesGroupsDropdown"></ul></li>
+		<li class='species'><ul class="doubleCol species" role="menu" id="speciesListDropdown"></ul></li>
+	</ul>
         </li>
         <li class="dropdown">
 	<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentCountry">Country</span><span class="caret"></span></a>
@@ -198,70 +281,32 @@
 		<h3 class="panel-title"><%= title %></h3>
 	</div>
 	<div class="panel-body">
-		<% if (data.img != '') print ("<img data-toggle='modal' data-target='#speciesModal' class='img-responsive' src='data/speciesImg/"+data.img+"'/>"); %>
-		<% if (data.family != '') print ("<h4>Family</h4><ul class='list-group'><li class='list-group-item activeSpecies' data-species='"+data.family+"'>"+data.family+"</li></ul>"); %>
+		<img  data-toggle='modal' data-target='#speciesModal' class='img-responsive' src='http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/species/<%= data.scientificName.toLowerCase().replace(/ /g, "_")%>-drawing-medium.png'>
+		<% if (data.groupCode != 0) print ("<h4>Group</h4><ul class='list-group'><li class='list-group-item activeSpecies' data-species='"+data.groupCode+"'>"+sharksDB.Collections.speciesGroupsCollection.get(data.groupCode).get('name')+"</li></ul>"); %>
 		<h4>Common names</h4>
 		<ul class="list-group">
-			<li class='list-group-item'>
-				<img src='img/gb.png'/> <%= data.EN %>
-			</li>
-			<li class='list-group-item'>
-				<img src='img/fr.png'/> <%= data.FR %>
-			</li>
-			<li class='list-group-item'>
-				<img src='img/es.png'/> <%= data.SP %>
-			</li>
+			<% if (data.officialNames.ar != undefined) print ("<li class='list-group-item'><span class='langAbv'>Ar: </span>"+data.officialNames.ar+"</li>"); %>
+			<% if (data.officialNames.en != undefined) print ("<li class='list-group-item'><span class='langAbv'>En: </span>"+data.officialNames.en+"</li>"); %>
+			<% if (data.officialNames.es != undefined) print ("<li class='list-group-item'><span class='langAbv'>Es: </span>"+data.officialNames.es+"</li>"); %>
+			<% if (data.officialNames.fr != undefined) print ("<li class='list-group-item'><span class='langAbv'>Fr: </span>"+data.officialNames.fr+"</li>"); %>
+			<% if (data.officialNames.ru != undefined) print ("<li class='list-group-item'><span class='langAbv'>Ru: </span>"+data.officialNames.ru+"</li>"); %>
+			<% if (data.officialNames.zh != undefined) print ("<li class='list-group-item'><span class='langAbv'>Zh: </span>"+data.officialNames.zh+"</li>"); %>
 		</ul>
-		<% if (data.factsheet != '') print('<h4><a target="_blank" href="'+data.factsheet+'">Factsheet</h4>'); %>
+		<% if (data.figisId != '') print('<h4><a target="_blank" href="http://www.fao.org/fishery/species/'+data.figisId+'/en">Factsheet</h4>'); %>
 	</div>
 </script>
 
 <script type="text/template" id="familySidePanel">
 	<div class="panel-heading">
-		<h3 class="panel-title"><%= title %> family</h3>
+		<h3 class="panel-title"><%= title %> group</h3>
 	</div>
 	<div class="panel-body">
-		<% if (data.img != '') print ("<img data-toggle='modal' data-target='#myModal' class='img-responsive' src='data/speciesImg/"+data.img+"'/>"); %>
+		<img  data-toggle='modal' data-target='#speciesModal' class='img-responsive' src='http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/groups/<%= title.toLowerCase().replace(/ /g, "_")%>-drawing-medium.png'>
 		<ul class="list-group">
-		<% _.each(members, function (d,k) { %>
-			<li class='list-group-item activeSpecies'' data-species='<%= k %>'><%= k %></li>
+		<% _.each(data, function (d) { %>
+			<li class='list-group-item activeSpecies' data-species='<%= d.alphaCode %>'><%= d.englishName %><div data-species='<%= d.alphaCode %>' class='scientificName'><%= d.scientificName %></div></li>
 		<% }) %>
 		</ul>
-
-		<h4>Common names</h4>
-		<ul class="list-group">
-			<li class='list-group-item noBorder'>
-				<img src='img/gb.png'/><span class='familyTitle'> <%= data.EN %></span>
-				<ul class="list-group">
-				<% _.each(members, function (d,k) { %>
-					<li class='list-group-item activeSpecies' data-species='<%= k %>' title='<%= k %>'>
-						<%= d.EN %>
-					</li>
-				<% }) %>
-				</ul>
-			</li>
-			<li class='list-group-item noBorder'>
-				<img src='img/fr.png'/><span class='familyTitle'> <%= data.FR %></span>
-				<ul class="list-group">
-				<% _.each(members, function (d,k) { %>
-					<li class='list-group-item' title='<%= k %>'>
-						<%= d.FR %>
-					</li>
-				<% }) %>
-				</ul>
-			</li>
-			<li class='list-group-item noBorder'>
-				<img src='img/es.png'/><span class='familyTitle'> <%= data.SP %></span>
-				<ul class="list-group">
-				<% _.each(members, function (d,k) { %>
-					<li class='list-group-item' title='<%= k %>'>
-						<%= d.SP %>
-					</li>
-				<% }) %>
-				</ul>
-			</li>
-		</ul>
-		<% if (data.factsheet != '') print('<h4><a target="_blank" href="'+data.factsheet+'">Factsheet</h4>'); %>
 	</div>
 </script>
 
@@ -314,18 +359,16 @@
 			<th>Type</th>
 			<th>RFMO</th>
 			<th>Title</th>
-			<th>Description</th>
 			<th>Year</th>
 		</tr>
 	</thead>
 	<tbody>
 		<% _.each(dataArray, function(d){ %>
 		<tr>
-			<td><% if (d.url!='') print("<a target='_blank' href='"+d.url+"'><img width='20px' src='img/link-icon.png'/></a>") %></td>
-			<td><%= d.type %></td>
-			<td class='doclink' data-rfmo='<%= d.rfmo %>'><%= d.rfmo %></td>
+			<td><% if (_.isArray(d.sources)) print("<a target='_blank' href='"+d.sources[0].url+"'><img width='20px' src='img/link-icon.png'/></a>") %></td>
+			<td><%= d.documentType %></td>
+			<td class='doclink' data-rfmo='<%= d.entityAcronym %>'><%= d.entityAcronym %></td>
 			<td><%= d.title %></td>
-			<td><%= d.description %></td>
 			<td><%= d.year %></td>
 		</tr>
 		<% });%>
@@ -364,11 +407,17 @@
 </script>
 
 <script type="text/template" id="selectorDropdown">
-	<li><a class='ddpick' data-<%= type %>='<%= data %>' title='<%= name %>'><%= name %></a></li>
+<li><a class='ddpick' data-<%= type %>='<%= data %>' title='<%= name %>'><%= name %></a></li>
+</script>
+
+<script type="text/template" id="selectorDropdownThumbnail">
+<li><a class='ddpick ddthumbnail' data-<%= type %>='<%= data %>' title='<%= name %>'><img src="http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/<%= thumbnailPath %>" /><%= name %></a></li>
 </script>
 
 <script src='assets/js/app.js'></script>
 <script src='assets/js/models/state-model.js'></script>
+<script src='assets/js/models/species-models.js'></script>
+<script src='assets/js/collections/species-collection.js'></script>
 <script src='assets/js/routers/app-routers.js'></script>
 <script src='assets/js/views/app-view.js'></script>
 <script src='assets/js/views/selector-view.js'></script>

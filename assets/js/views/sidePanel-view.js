@@ -4,6 +4,7 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 		initialize: function (options) {
 			this.options = options || {};
 			this.listenTo(this.model, 'change', this.render);
+			this.listenTo(this.model, 'speciesModelUpdated', this.render); /* we may trigger an update when data has been loaded */
 		},
 
 		events : {
@@ -31,27 +32,17 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 
 			if (this.model.get('species')!='') {
 				var species = this.model.get('species');
-				/* check if selected species is actually a family : family field empty */
-				if (species in sharksDB.Collections.speciesInfoList) {
-					if (sharksDB.Collections.speciesInfoList[species].family == '') { /* it is a family */
-						/* get from the speciesInfoList all members of the family */
-						var familyMembers = {};
-						$.each(sharksDB.Collections.speciesInfoList, function (k,d){
-							if (d.family==species) {
-								familyMembers[k]=d;
-							}
-						});
-						this.$el.html(this.familyTemplate({title: this.model.get('species'), data: sharksDB.Collections.speciesInfoList[species], members: familyMembers}));
-					} else { /* it is a species */
-						this.$el.html(this.speciesTemplate({title: this.model.get('species'), data: sharksDB.Collections.speciesInfoList[species]}));
-					}
-					/* if we have an image, set it in the modal div to display on clic on thumbnail */
-					if (sharksDB.Collections.speciesInfoList[species].img != '') {
-						$('#speciesImg').html("<img class='img-responsive' src='data/speciesImg/"+sharksDB.Collections.speciesInfoList[species].img+"'/>");
-					}
-				} else { /* is not in the species database, use object with empty fields */
-					this.$el.html(this.speciesTemplate({title: this.model.get('species'), data: {family:'', EN:'', FR:'', SP:'', description:'', factsheet:'', img:''}}));
 
+				if (!isNaN(+species)) { /* this is a species group, data has already been fetched at loading, just display the table */
+					var speciesGroupModel = sharksDB.Collections.speciesGroupsCollection.get(species);
+					this.$el.html(this.familyTemplate({title: speciesGroupModel.get('name'), data: speciesGroupModel.get('species')}));
+					$('#speciesImg').html("<img class='img-responsive' src='http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/groups/"+speciesGroupModel.get('name').toLowerCase().replace(/ /g, "_")+"-drawing-medium.png'/>");
+				} else { /* this is not a species group, check data his here (fetched by central view render) */
+					var speciesModel = sharksDB.Collections.speciesCollection.get(species);
+					if (speciesModel.get('completed') == true) { /* if we don't have the data just do nothing */
+						this.$el.html(this.speciesTemplate({title: speciesModel.get('scientificName'), data: speciesModel.attributes}));
+						$('#speciesImg').html("<img class='img-responsive' src='http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/species/"+speciesModel.get('scientificName').toLowerCase().replace(/ /g, "_")+"-drawing-medium.png'/>");
+					}
 				}
 				this.$el.show();
 			}

@@ -22,16 +22,31 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 				this.$el.html(this.countryTemplate({dataArray: sharksDB.Collections.countryList[this.model.get('country')].sort(yearSort)}));
 				this.$el.show();
 			}
+
 			if (this.model.get('species')!='') {
 				var species = this.model.get('species');
-				/* render species table  */
-				if (sharksDB.Collections.speciesList[this.model.get('species')] != undefined) {
-					this.$el.html(this.speciesTemplate({dataArray: sharksDB.Collections.speciesList[species].sort(yearSort)}));
-				} else {
-					this.$el.html(this.speciesTemplate({dataArray: new Array()}));
-				}
-				/* render distribution map if exists */
-				if (sharksDB.Collections.speciesInfoList[species].map != '') {
+				if (!isNaN(+species)) { /* this is a species group, data has already been fetched at loading, just display the table */
+					if (sharksDB.Collections.speciesGroupsCollection.get(species) != undefined) {
+						this.$el.html(this.speciesTemplate({dataArray: sharksDB.Collections.speciesGroupsCollection.get(species).get('measures').sort(yearSort)}));
+					} else {
+						this.$el.html(this.speciesTemplate({dataArray: new Array()}));
+					}
+					this.$el.show();
+				} else { /* this is not a species group : fetch the complete information about it if needed */
+					var speciesModel = sharksDB.Collections.speciesCollection.get(species);
+					if (speciesModel.get('completed') == false) { /* we have to fetch the data*/
+						speciesModel.url =  'http://figisapps.fao.org/figis/sharks/rest/species'+'/'+species;
+						speciesModel.fetch({
+							success : function () {
+								speciesModel.set('completed', true);
+								$('#centralPanel').html(sharksDB.Views.CentralPanel.prototype.speciesTemplate({dataArray: speciesModel.get('measures').sort(yearSort)}));
+								sharksDB.Models.currentState.trigger("speciesModelUpdated");
+							}
+						});
+					} else {
+						this.$el.html(this.speciesTemplate({dataArray: speciesModel.get('measures').sort(yearSort)}));
+					}
+
 					$('#map').show();
 					this.$el.show(); /* display the map div before loading the map to get correct dimension */
 
@@ -44,22 +59,20 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 					}
 					sharksDB.Map.map.setView([25,0], 2);
 
-					/* add the distribution area from FAO server */
+					/* get the distribution area from FAO server */
 					sharksDB.Map.maritimeZoneLayer = L.tileLayer.wms('http://www.fao.org/figis/geoserver/wms', {
-							dpiMode: 7,
-							layers: 'species:SPECIES_DIST_'+sharksDB.Collections.speciesInfoList[species].map,
-							featureCount: 10,
-							format: 'image/png',
-							transparent: true,
-							zIndex: 1
-						})
-						.setOpacity(0.85)
-						.addTo(sharksDB.Map.map);
-				} else {
-					this.$el.show();
+						dpiMode: 7,
+						layers: 'fifao:SPECIES_DIST',
+						cql_filter: "ALPHACODE='"+species+"'",
+						featureCount: 10,
+						format: 'image/png',
+						transparent: true,
+						zIndex: 1
+					}).setOpacity(0.85)
+					.addTo(sharksDB.Map.map);
 				}
 
-			}
+							}
 			if (this.model.get('rfmo')!='') {
 				var rfmo = this.model.get('rfmo');
 				/* render rfmo table  */
