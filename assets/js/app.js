@@ -6,25 +6,17 @@ window.sharksDB = {
 	Routers:{},
 
 	initialize : function () {
-		sharksDB.Collections.countryList = new Array();
-		sharksDB.Collections.countryInfoList = new Array();
-		sharksDB.Collections.speciesList = new Object();
-		sharksDB.Collections.RFMOList = new Object();
-		sharksDB.Collections.RFMOInfoList = new Object();
-
 		sharksDB.Models.currentState = new sharksDB.Models.state();
 
 		sharksDB.Collections.speciesGroupsCollection =  new sharksDB.Collections.speciesGroups();
 		sharksDB.Collections.speciesGroupsCollection.comparator = 'name';
 		sharksDB.Collections.speciesCollection =  new sharksDB.Collections.species();
 		sharksDB.Collections.speciesCollection.comparator =  'englishName';
+		sharksDB.Collections.entitiesCollection =  new sharksDB.Collections.entities();
+		sharksDB.Collections.entitiesCollection.comparator = 'acronym';
+		sharksDB.Collections.countriesCollection =  new sharksDB.Collections.countries();
+		sharksDB.Collections.countriesCollection.comparator = 'name';
 
-		/*sharksDB.Collections.speciesGroupsCollection.fetch({
-			success : function () {
-				console.log(sharksDB.Collections.speciesGroupsCollection.models);
-			}
-		});
-*/
 		/* maps: initialise mapbox token and set to undefined map and rfmoLayer variables */
 		L.mapbox.accessToken = 'pk.eyJ1IjoiamVhbm5vdGxhcGluIiwiYSI6Im5qNTl1QXcifQ.fex2-4xMOYtkSgwtkwRGBQ';
 		sharksDB.Map.map = undefined; /* this is useless, just to keep track of properties used in the Map object */
@@ -72,85 +64,45 @@ window.sharksDB = {
 			});
 		};
 
-
-		queue(2)
-		//.defer(d3.xml, "data/getcapabilities_1.1.1.xml", "application/xml")
-		//.defer(d3.xml, "http://www.fao.org/figis/geoserver/wms?service=wms&version=1.1.1&request=GetCapabilities", "application/xml") // Enable this if figis server unlock cross origin request in their header
-		.defer(getSpecies) /* fetch the groups and species information, all of these are stored in the dedicated collections: speciesCollection and speciesGroupCollection */
-		.defer(d3.csv, "data/countryDocList.csv", function (d) {
-			if (+d.isonumcode != 0 && !isNaN(d.isonumcode)) { /* skip invalid country code */
-				if (!(+d.isonumcode in sharksDB.Collections.countryList)) {
-					sharksDB.Collections.countryList[+d.isonumcode] = new Array();
-				}
-				sharksDB.Collections.countryList[+d.isonumcode].push({
-					type: d.type,
-					title: d.title,
-					status: d.status,
-					description: d.description,
-					url: d.url,
-					year: d.year
+		/* fetch from figis server the entities general information (details are fetched on demand) */
+		function getEntities (callback) {
+			sharksDB.Collections.entitiesCollection.fetch({
+				data : {onlyWithMeasures: true}, /* fetch first entities with measures */
+				success : function () {
+					sharksDB.Collections.entitiesCollection.forEach(function (model) {
+						model.set('hasMeasure', true); /* tag them as having measure */
 					});
-			}
-		})
-		.defer(d3.csv, "data/RFMODocList.csv", function (d) {
-			/* populate RFMOList */
-			if (!(d.RFMO in sharksDB.Collections.RFMOList)) {
-				sharksDB.Collections.RFMOList[d.RFMO] = new Array();
-			}
-			sharksDB.Collections.RFMOList[d.RFMO].push({
-				type: d.type,
-				measure: d.measure,
-				species: d.species,
-				title: d.title,
-				description: d.description,
-				url: d.url,
-				year: d.year
+					sharksDB.Collections.entitiesCollection.fetch({ /* now fetch them all */
+						success : function () {
+							callback(null, sharksDB.Collections.entitiesCollection);
+						}
+					});
+				}
 			});
+		};
 
-			/* populate SpeciesList */
-			if (d.species != '') {
-				if (!(d.species in sharksDB.Collections.speciesList)) {
-					sharksDB.Collections.speciesList[d.species] = new Array();
+		/* fetch from figis server the countries with PoAs general information (details are fetched on demand) */
+		function getCountries (callback) {
+			sharksDB.Collections.countriesCollection.fetch({
+				data : {onlyWithPoAs: true}, /* fetch countries with measures only */
+				success : function () {
+					callback(null, sharksDB.Collections.countriesCollection);
 				}
-				sharksDB.Collections.speciesList[d.species].push({
-					type: d.type,
-					measure: d.measure,
-					rfmo: d.RFMO,
-					title: d.title,
-					description: d.description,
-					url: d.url,
-					year: d.year
-				});
-			}
-		})
-		.defer(d3.csv, "data/countryMembership.csv", function (d) {
-			if (+d.isonumcode != 0 && !isNaN(d.isonumcode)) { /* skip invalid country code */
-				sharksDB.Collections.countryInfoList[+d.isonumcode] = {
-					name: d.name,
-					iso2: d.isocode2,
-					iso3: d.isocode3,
-					rfmo: (d.RFMO=='')?new Array():d.RFMO.split(',')
-				};
-			}
-		})
-		.defer(d3.csv, "data/RFMOSpecs.csv", function (d) {
-			if (!(d.acronym in sharksDB.Collections.RFMOInfoList)) {
-				sharksDB.Collections.RFMOInfoList[d.acronym] = {
-					name: d.name,
-					url: d.url,
-					map: d.map.split(',')
-				}
-			}
-		})
+			});
+		};
+
+
+		queue(3)
+		.defer(getSpecies) /* fetch the groups and species information, all of these are stored in the dedicated collections: speciesCollection and speciesGroupCollection */
+		.defer(getCountries) /* fetch the countries list, stored in the dedicated collections: countriesCollection */
+		.defer(getEntities) /* fetch the management entities list, stored in the dedicated collections: entitiesCollection */
 		.awaitAll(ready);
 	}
 
 };
 
-//		.defer(d3.xml, "http://www.fao.org/figis/geoserver/wms?service=wms&version=1.1.1&request=GetCapabilities", function (d) {
 function ready(error, results) {
 	if (results) {
-		//sharksDB.Collections.faoWMSCapabilitiesXml = results[0]; /* results[0] contains the xml capabilities file */
 		/* add a groupCode field to the species model */
 		sharksDB.Collections.speciesGroupsCollection.forEach(function (speciesGroups) {
 			speciesGroups.get('species').forEach( function (species) {
@@ -176,4 +128,3 @@ $('.modal').on('show.bs.modal', centerModal);
 $(window).on("resize", function () {
     $('.modal:visible').each(centerModal);
 });
-

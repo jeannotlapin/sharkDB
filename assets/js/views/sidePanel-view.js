@@ -4,7 +4,7 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 		initialize: function (options) {
 			this.options = options || {};
 			this.listenTo(this.model, 'change', this.render);
-			this.listenTo(this.model, 'speciesModelUpdated', this.render); /* we may trigger an update when data has been loaded */
+			this.listenTo(this.model, 'modelUpdated', this.render); /* we may trigger an update when data has been loaded */
 		},
 
 		events : {
@@ -21,13 +21,14 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 		render : function () {
 			this.$el.hide();
 			if (this.model.get('country')!='') {
-				/* render country membership  */
-				if (sharksDB.Collections.countryInfoList[this.model.get('country')].rfmo.size==0) {
-					this.$el.html('<div class="panel-heading"><h3 class="panel-title">Member of</h3></div>');
-				} else {
-					this.$el.html(this.countryTemplate({title: 'Member of', dataArray: sharksDB.Collections.countryInfoList[this.model.get('country')].rfmo}));
+				var country = this.model.get('country');
+				var countriesModel = sharksDB.Collections.countriesCollection.get(country);
+				if (countriesModel.get('completed') == true) { /* if we don't have the data just do nothing */
+					/* render country memberships (with links to the one having documents)  */
+					this.$el.html(this.countryTemplate({title: 'Member of', dataArray: countriesModel.get('rfbs')}));
+					this.$el.show();
+					this.$el.show();
 				}
-				this.$el.show();
 			}
 
 			if (this.model.get('species')!='') {
@@ -37,26 +38,25 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 					var speciesGroupModel = sharksDB.Collections.speciesGroupsCollection.get(species);
 					this.$el.html(this.familyTemplate({title: speciesGroupModel.get('name'), data: speciesGroupModel.get('species')}));
 					$('#speciesImg').html("<img class='img-responsive' src='http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/groups/"+speciesGroupModel.get('name').toLowerCase().replace(/ /g, "_")+"-drawing-medium.png'/>");
+					this.$el.show();
 				} else { /* this is not a species group, check data his here (fetched by central view render) */
 					var speciesModel = sharksDB.Collections.speciesCollection.get(species);
 					if (speciesModel.get('completed') == true) { /* if we don't have the data just do nothing */
 						this.$el.html(this.speciesTemplate({title: speciesModel.get('scientificName'), data: speciesModel.attributes}));
 						$('#speciesImg').html("<img class='img-responsive' src='http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/species/"+speciesModel.get('scientificName').toLowerCase().replace(/ /g, "_")+"-drawing-medium.png'/>");
+						this.$el.show();
 					}
 				}
-				this.$el.show();
 			}
 
 			if (this.model.get('rfmo')!='') {
 				var rfmo = this.model.get('rfmo');
-				/* render rfmo members(with links to the one having documents)  */
-				var memberList = new Array(); /* extract member list : {name: , isonumcode: , link: }*/
-				sharksDB.Collections.countryInfoList.forEach(function(d,k){
-						if ($.inArray(rfmo, d.rfmo) != -1) {
-							memberList.push({name : d.name, isonumcode:k, countryname: sharksDB.Collections.countryInfoList[k].name, link: (k in sharksDB.Collections.countryList)?1:0});
-						}});
-				this.$el.html(this.rfmoTemplate({title: 'Members', dataArray: memberList.sort(function(a,b){return (a.name<b.name)?-1:1})}));
-				this.$el.show();
+				var entitiesModel = sharksDB.Collections.entitiesCollection.get(rfmo);
+				if (entitiesModel.get('completed') == true) { /* if we don't have the data just do nothing */
+					/* render rfmo members(with links to the one having documents)  */
+					this.$el.html(this.rfmoTemplate({title: 'Members', dataArray: entitiesModel.get('members')}));
+					this.$el.show();
+				}
 			}
 			return this;
 		},

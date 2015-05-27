@@ -16,31 +16,46 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 
 		render : function () {
 			this.$el.hide();
+			$('#displayTitle').html(''); /* clear title */
 			$('#map').hide();
 			if (this.model.get('country')!='') {
-				/* render country table  */
-				this.$el.html(this.countryTemplate({dataArray: sharksDB.Collections.countryList[this.model.get('country')].sort(yearSort)}));
+				var country = this.model.get('country');
+				var countriesModel = sharksDB.Collections.countriesCollection.get(country);
+				var targetView = this;
+				if (countriesModel.get('completed') == false) { /* we have to fetch the data*/
+					countriesModel.url =  'http://figisapps.fao.org/figis/sharks/rest/countries'+'/'+country;
+					countriesModel.fetch({
+						success : function () {
+							countriesModel.set('completed', true);
+							$('#displayTitle').html(countriesModel.get('name'));
+							targetView.$el.html(targetView.countryTemplate({poasArray: countriesModel.get('poas').sort(poayearSort), othersArray: countriesModel.get('others').sort(yearSort)}));
+							sharksDB.Models.currentState.trigger("modelUpdated");
+						}
+					});
+				} else {
+					$('#displayTitle').html(countriesModel.get('name'));
+					this.$el.html(this.countryTemplate({dataArray: countriesModel.get('poas').sort(poayearSort)}));
+				}
+
 				this.$el.show();
 			}
 
 			if (this.model.get('species')!='') {
 				var species = this.model.get('species');
 				if (!isNaN(+species)) { /* this is a species group, data has already been fetched at loading, just display the table */
-					if (sharksDB.Collections.speciesGroupsCollection.get(species) != undefined) {
-						this.$el.html(this.speciesTemplate({dataArray: sharksDB.Collections.speciesGroupsCollection.get(species).get('measures').sort(yearSort)}));
-					} else {
-						this.$el.html(this.speciesTemplate({dataArray: new Array()}));
-					}
+					$('#displayTitle').html(sharksDB.Collections.speciesGroupsCollection.get(species).get('name'));
+					this.$el.html(this.speciesTemplate({dataArray: sharksDB.Collections.speciesGroupsCollection.get(species).get('measures').sort(yearSort)}));
 					this.$el.show();
 				} else { /* this is not a species group : fetch the complete information about it if needed */
 					var speciesModel = sharksDB.Collections.speciesCollection.get(species);
+					$('#displayTitle').html(speciesModel.get('englishName'));
 					if (speciesModel.get('completed') == false) { /* we have to fetch the data*/
 						speciesModel.url =  'http://figisapps.fao.org/figis/sharks/rest/species'+'/'+species;
 						speciesModel.fetch({
 							success : function () {
 								speciesModel.set('completed', true);
 								$('#centralPanel').html(sharksDB.Views.CentralPanel.prototype.speciesTemplate({dataArray: speciesModel.get('measures').sort(yearSort)}));
-								sharksDB.Models.currentState.trigger("speciesModelUpdated");
+								sharksDB.Models.currentState.trigger("modelUpdated");
 							}
 						});
 					} else {
@@ -75,12 +90,25 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 							}
 			if (this.model.get('rfmo')!='') {
 				var rfmo = this.model.get('rfmo');
-				/* render rfmo table  */
-				if (sharksDB.Collections.RFMOList[rfmo] != undefined) {
-					this.$el.html(this.rfmoTemplate({dataArray: sharksDB.Collections.RFMOList[rfmo].sort(yearSort)}));
+				var entitiesModel = sharksDB.Collections.entitiesCollection.get(rfmo);
+				var targetView = this;
+				if (entitiesModel.get('completed') == false) { /* we have to fetch the data*/
+					entitiesModel.url =  'http://figisapps.fao.org/figis/sharks/rest/managemententities'+'/'+rfmo;
+					entitiesModel.fetch({
+						success : function () {
+							entitiesModel.set('completed', true);
+							$('#displayTitle').html("<a target='_blank' href='"+entitiesModel.get('webSite')+"'>"+entitiesModel.get('name')+"</a>");
+							targetView.$el.html(targetView.rfmoTemplate({dataArray: entitiesModel.get('measures').sort(yearSort)}));
+							sharksDB.Models.currentState.trigger("modelUpdated");
+							renderCountriesOnRFMOMap(entitiesModel.get('members'));
+						}
+					});
 				} else {
-					this.$el.html(this.rfmoTemplate({dataArray: new Array()}));
+					$('#displayTitle').html("<a target='_blank' href='"+entitiesModel.get('webSite')+"'>"+entitiesModel.get('name')+"</a>");
+					this.$el.html(this.rfmoTemplate({dataArray: entitiesModel.get('measures').sort(yearSort)}));
+					renderCountriesOnRFMOMap(entitiesModel.get('members'));
 				}
+
 				/* render rfmo map */
 				$('#map').show();
 				this.$el.show(); /* display the map div before loading the map to get correct dimension */
@@ -91,7 +119,9 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 				} else { /* map was already loaded, we must clean zone layers before adding new one */
 					sharksDB.Map.map.removeLayer(sharksDB.Map.maritimeZoneLayer); /* remove the wms tile of rfmo competence zone */
 				}
-				sharksDB.Map.map.setView(sharksDB.Collections.RFMOInfoList[rfmo].map, 2);
+
+				//sharksDB.Map.map.setView(sharksDB.Collections.RFMOInfoList[rfmo].map, 2); TODO: get the zoom from a geaFeature call
+				sharksDB.Map.map.setView([0, 25], 2);
 
 				/* add the competence area from FAO server */
 				sharksDB.Map.maritimeZoneLayer = L.tileLayer.wms('http://www.fao.org/figis/geoserver/wms', {
@@ -104,62 +134,6 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 						})
 						.setOpacity(0.15)
 						.addTo(sharksDB.Map.map);
-
-				/* add countries highlighting layer using d3 */
-				var ue = ($.inArray(rfmo, sharksDB.Collections.countryInfoList[1001].rfmo) != -1); /* UE have the arbitrary 1001 iso code in the DB */
-
-				d3.json("data/geodata/countries110.json", function(collection) {
-					var transform = d3.geo.transform({point: projectPoint}),
-					path = d3.geo.path().projection(transform);
-					var transform2 = d3.geo.transform({point: projectPoint2}),
-					path2 = d3.geo.path().projection(transform2);
-					
-					var selectedCountries = d3.select("#layerCountries").selectAll("g")
-						.data(collection.features.filter(function (d){
-							/* check country */
-							if (+d.properties.iso_n3 in sharksDB.Collections.countryInfoList && sharksDB.Collections.countryInfoList[+d.properties.iso_n3] != undefined) {
-								if ($.inArray(rfmo, sharksDB.Collections.countryInfoList[+d.properties.iso_n3].rfmo) != -1) {
-									return true
-								}
-							}
-
-							/* check UE */
-							if (ue==true && d.properties.UE==1) { /* geojson has been modified to include a UE property set to 1 for UE members */
-								return true;
-							}
-							return false;
-						}),
-						function (d){return d.properties.iso_n3});
-
-					selectedCountries.exit().remove(); /* on selection exit remove the g element */
-
-					var countryGroups =selectedCountries.enter() /* append a g element on enter */
-						.append("g");
-
-					var countryPathsWorld1 = countryGroups.append("path"); /* on enter: append 2 path elements in each g one : duplicate the world at +360 */
-					var countryPathsWorld2 = countryGroups.append("path");
-
-					sharksDB.Map.map.on("viewreset", reset);
-
-					/* Draw the SVG paths for countries. */
-					function reset() {
-						countryPathsWorld1.attr("d", path); /* on current world [-180,180]*/
-						countryPathsWorld2.attr("d", path2); /* on another world [180, 540]*/
-						sharksDB.Map.map._updateSvgViewport(); /* make sure we update correctly svg layer translate attribute */
-					}
-
-					/* Use Leaflet to implement a D3 geometric transformation */
-					function projectPoint(x, y) {
-						var point = sharksDB.Map.map.latLngToLayerPoint(new L.LatLng(y, x));
-						this.stream.point(point.x, point.y);
-					}
-					function projectPoint2(x, y) {
-						var point2 = sharksDB.Map.map.latLngToLayerPoint(new L.LatLng(y, x+360)); /* project on a world translated by 360° */
-						this.stream.point(point2.x, point2.y);
-					}
-
-					reset();
-				});
 			}
 			return this;
 		},
@@ -178,6 +152,12 @@ function yearSort(a,b) {
 	 if (a.title>b.title) return 1;
 	 return -1;
 }
+function poayearSort(a,b) {
+	 if (+a.poAYear>+b.poAYear) return -1;
+	 if (+a.poAYear<+b.poAYear) return 1;
+	 if (a.title>b.title) return 1;
+	 return -1;
+}
 
 /* Load background map and 200nm limit WMS layer from FAO server */
 function setBackgroundMap() {
@@ -188,7 +168,6 @@ function setBackgroundMap() {
 	var svg = d3.select("#map").select("svg"),
 	    g = svg.append("g").attr("id", "layerCountries");
 	g.classed('countryHigh', true); /* set class to layerCountries g element */
-
 
 	/* add the 200nm limit from FAO server */
 	var nm200Layer = L.tileLayer.wms('http://www.fao.org/figis/geoserver/wms', {
@@ -201,4 +180,59 @@ function setBackgroundMap() {
 		})
 		.setOpacity(0.20)
 		.addTo(sharksDB.Map.map);
+}
+
+/* render countries on the RFMO maps, is out of the render function because must wait for the asynchronous fetch of entity data */
+function renderCountriesOnRFMOMap(modelMembers) {
+	/* add countries highlighting layer using d3 */
+	var entityCountryList = []; /* get all member iso_a3 code in an array */
+	modelMembers.forEach(function(d){
+		entityCountryList.push(d.code);
+	});
+
+	d3.json("data/geodata/countries110.json", function(collection) {
+		var transform = d3.geo.transform({point: projectPoint}),
+		path = d3.geo.path().projection(transform);
+		var transform2 = d3.geo.transform({point: projectPoint2}),
+		path2 = d3.geo.path().projection(transform2);
+
+		var selectedCountries = d3.select("#layerCountries").selectAll("g")
+			.data(collection.features.filter(function (d){
+				/* check country */
+				if ($.inArray(d.properties.iso_a3, entityCountryList) != -1) {
+					return true;
+				}
+				return false;
+			}),
+			function (d){return d.properties.iso_a3});
+
+		selectedCountries.exit().remove(); /* on selection exit remove the g element */
+
+		var countryGroups =selectedCountries.enter() /* append a g element on enter */
+			.append("g");
+
+		var countryPathsWorld1 = countryGroups.append("path"); /* on enter: append 2 path elements in each g one : duplicate the world at +360 */
+		var countryPathsWorld2 = countryGroups.append("path");
+
+		sharksDB.Map.map.on("viewreset", reset);
+
+		/* Draw the SVG paths for countries. */
+		function reset() {
+			countryPathsWorld1.attr("d", path); /* on current world [-180,180]*/
+			countryPathsWorld2.attr("d", path2); /* on another world [180, 540]*/
+			sharksDB.Map.map._updateSvgViewport(); /* make sure we update correctly svg layer translate attribute */
+		}
+
+		/* Use Leaflet to implement a D3 geometric transformation */
+		function projectPoint(x, y) {
+			var point = sharksDB.Map.map.latLngToLayerPoint(new L.LatLng(y, x));
+			this.stream.point(point.x, point.y);
+		}
+		function projectPoint2(x, y) {
+			var point2 = sharksDB.Map.map.latLngToLayerPoint(new L.LatLng(y, x+360)); /* project on a world translated by 360° */
+			this.stream.point(point2.x, point2.y);
+		}
+
+		reset();
+	});
 }

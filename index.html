@@ -73,6 +73,39 @@
 		text-decoration:none;
 	}
 
+	ul.tripleCol {
+		width:32em;
+		padding:0;
+		clear:both;
+	}
+
+	ul.tripleCol li {
+		width: 33%;
+		height: auto;
+		overflow: hidden;
+	}
+
+	ul.tripleCol li:nth-child(3n+2) { 
+		float: left;
+	}
+
+	ul.tripleCol li:nth-child(3n+1)  {
+		float: left;
+	}
+
+	.tripleCol > li > a, .tripleCol > li > a:focus {
+		clear: both;
+		color: #ffffff;
+		padding: 2px 13px;
+		display: block;
+		line-height: 1.4;
+		white-space: nowrap;
+		background-color: transparent;
+		font-size: 13px;
+		font-weight: 300;
+		text-decoration:none;
+	}
+
 	ul.speciesGroups > li > a, ul.speciesGroups > li > a:focus {
 		font-weight: 600;
 	}
@@ -198,6 +231,24 @@
 		padding: 1px;
 		padding-left: 3px;
 	}
+	#RFMODropdown {
+		min-width: 8em;
+	}
+
+	#RFMODropdown li a.hasNoMeasure {
+		font-style: italic;
+		background-color: #33587b;
+		color: #BBBBBB;
+	}
+
+	#RFMODropdown li a.hasNoMeasure:hover {
+		background-color:#4488ab;
+		color: #DDDDDD;
+	}
+
+	.leaflet-bottom, .leaflet-top {
+		z-index:990 !important;
+	}
     </style>
 </head>
 <body>
@@ -229,7 +280,7 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul id="navSelector" class="nav navbar-nav">
         <li class="dropdown">
-	<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentRFMO">RFMO</span><span class="caret"></span></a>
+	<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentRFMO">Entities</span><span class="caret"></span></a>
 	<ul class="dropdown-menu" role="menu" id="RFMODropdown"></ul>
         </li>
         <li class="dropdown">
@@ -241,7 +292,7 @@
         </li>
         <li class="dropdown">
 	<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentCountry">Country</span><span class="caret"></span></a>
-	<ul class="dropdown-menu doubleCol" role="menu" id="countryDropdown"></ul>
+	<ul class="dropdown-menu tripleCol" role="menu" id="countryDropdown"></ul>
         </li>
       </ul>
     </div><!-- /.navbar-collapse -->
@@ -279,7 +330,7 @@
 	<div class="panel-body">
 		<ul class="list-group">
 		<% _.each(dataArray, function (d) { %>
-			<li class='list-group-item activeRFMO' data-rfmo='<%= d %>'><%= d %></li>
+			<li class='list-group-item <%= ((d.hasMeasures==true)?"activeRFMO' data-rfmo='"+d.acronym+"'":"'") %> ><%= d.acronym %></li>
 		<% }); %>
 		</ul>
 	</div>
@@ -291,7 +342,7 @@
 	</div>
 	<div class="panel-body">
 		<img  data-toggle='modal' data-target='#speciesModal' class='img-responsive' src='http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/species/<%= data.scientificName.toLowerCase().replace(/ /g, "_")%>-drawing-medium.png'>
-		<% if (data.groupCode != 0) print ("<h4>Group</h4><ul class='list-group'><li class='list-group-item activeSpecies' data-species='"+data.groupCode+"'><img class='speciesFamilyThumbnail' src='http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/groups/"+sharksDB.Collections.speciesGroupsCollection.get(data.groupCode).get('name').toLowerCase().replace(/ /g, "_")+"-drawing-small.jpg'/>"+sharksDB.Collections.speciesGroupsCollection.get(data.groupCode).get('name')+"</li></ul>"); %>
+		<% if (data.groupCode != 0) print ("<h4>Group</h4><ul class='list-group'><li class='list-group-item activeSpecies' data-species='"+data.groupCode+"'><img data-species='"+data.groupCode+"' class='speciesFamilyThumbnail' src='http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/groups/"+sharksDB.Collections.speciesGroupsCollection.get(data.groupCode).get('name').toLowerCase().replace(/ /g, "_")+"-drawing-small.jpg'/>"+sharksDB.Collections.speciesGroupsCollection.get(data.groupCode).get('name')+"</li></ul>"); %>
 		<h4>Common names</h4>
 		<ul class="list-group">
 			<% if (data.officialNames.ar != undefined) print ("<li class='list-group-item'><span class='langAbv'>Ar: </span>"+data.officialNames.ar+"</li>"); %>
@@ -313,7 +364,13 @@
 		<img  data-toggle='modal' data-target='#speciesModal' class='img-responsive' src='http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/groups/<%= title.toLowerCase().replace(/ /g, "_")%>-drawing-medium.png'>
 		<ul class="list-group">
 		<% _.each(data, function (d) { %>
-			<li class='list-group-item activeSpecies' data-species='<%= d.alphaCode %>'><div data-species='<%= d.alphaCode %>' class='commonName'><%= d.englishName %></div><div data-species='<%= d.alphaCode %>' class='scientificName'><img class='speciesFamilyThumbnail' src='http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/species/<%= d.scientificName.toLowerCase().replace(/ /g, "_")%>-drawing-small.jpg' /><%= d.scientificName %></div></li>
+			<li class='list-group-item activeSpecies' data-species='<%= d.alphaCode %>'>
+				<div data-species='<%= d.alphaCode %>' class='commonName'><%= d.englishName %></div>
+				<div data-species='<%= d.alphaCode %>' class='scientificName'>
+					<img data-species='<%= d.alphaCode %>' class='speciesFamilyThumbnail' src='http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/species/<%= d.scientificName.toLowerCase().replace(/ /g, "_")%>-drawing-small.jpg' />
+					<%= d.scientificName %>
+				</div>
+			</li>
 		<% }) %>
 		</ul>
 	</div>
@@ -327,7 +384,7 @@
 	<div class="panel-body">
 		<ul class="list-group">
 		<% _.each(dataArray, function (d) { %>
-			<li class='list-group-item <%= ((d.link==1)?"activeCountry' data-countryid='"+d.isonumcode+"'":"'") %> ><%= d.countryname %></li>
+			<li class='list-group-item <%= ((d.hasPoAs==true)?"activeCountry' data-countryid='"+d.code+"'":"'") %> ><%= d.name %></li>
 		<% }); %>
 		</ul>
 	</div>
@@ -342,18 +399,25 @@
 			<th>Type</th>
 			<th>Status</th>
 			<th>Title</th>
-			<th>Description</th>
 			<th>Year</th>
 		</tr>
 	</thead>
 	<tbody>
-		<% _.each(dataArray, function(d){ %>
+		<% _.each(poasArray, function(d){ %>
 		<tr>
-			<td><% if (d.url!='') print("<a target='_blank' href='"+d.url+"'><img width='20px' src='img/link-icon.png'/></a>") %></td>
+			<td><% if (_.isArray(d.sources)) print("<a target='_blank' href='"+d.sources[0].url+"'><img width='20px' src='img/link-icon.png'/></a>") %></td>
 			<td><%= d.type %></td>
-			<td><%= d.status %>
+			<td><%= d.status %></td>
 			<td><%= d.title %></td>
-			<td><%= d.description %></td>
+			<td><%= d.poAYear %></td>
+		</tr>
+		<% });%>
+		<% _.each(othersArray, function(d){ %>
+		<tr>
+			<td><% if (d.url != undefined) print("<a target='_blank' href='"+d.url+"'><img width='20px' src='img/link-icon.png'/></a>") %></td>
+			<td><%= d.type %></td>
+			<td></td>
+			<td><%= d.title %></td>
 			<td><%= d.year %></td>
 		</tr>
 		<% });%>
@@ -366,7 +430,7 @@
 		<tr class="tableHeader">
 			<th class='linkCol'></th>
 			<th>Type</th>
-			<th>RFMO</th>
+			<th>Entity</th>
 			<th>Title</th>
 			<th>Year</th>
 		</tr>
@@ -390,24 +454,16 @@
 		<tr class="tableHeader">
 			<th class='linkCol'></th>
 			<th>Type</th>
-			<th>Species</th>
 			<th>Title</th>
-			<th>Description</th>
 			<th>Year</th>
 		</tr>
 	</thead>
 	<tbody>
 		<% _.each(dataArray, function(d){ %>
 		<tr>
-			<td><% if (d.url!='') print("<a target='_blank' href='"+d.url+"'><img width='20px' src='img/link-icon.png'/></a>") %></td>
-			<td><%= d.type %></td>
-			<% if (d.species!='') {
-				print ("<td class='doclink' data-species='"+d.species+"'>"+d.species+"</td>");
-			} else {
-				print ("<td>All sharks in the area</td>");
-			} %>
+			<td><% if (_.isArray(d.sources)) print("<a target='_blank' href='"+d.sources[0].url+"'><img width='20px' src='img/link-icon.png'/></a>") %></td>
+			<td><%= d.documentType %></td>
 			<td><%= d.title %></td>
-			<td><%= d.description %></td>
 			<td><%= d.year %></td>
 		</tr>
 		<% });%>
@@ -419,6 +475,10 @@
 <li><a class='ddpick' data-<%= type %>='<%= data %>' title='<%= name %>'><%= name %></a></li>
 </script>
 
+<script type="text/template" id="selectorDropdownEntities">
+<li><a class='ddpick<% if (hasMeasure==false) print (" hasNoMeasure");%>' data-<%= type %>='<%= data %>'><%= name %></a></li>
+</script>
+
 <script type="text/template" id="selectorDropdownThumbnail">
 <li><a class='ddpick ddthumbnail' data-<%= type %>='<%= data %>' title='<%= name %>'><img data-<%= type %>='<%= data %>' src="http://figisapps.fao.org/fishery/ipoa-sharks/measures/images/<%= thumbnailPath %>" /><%= name %></a></li>
 </script>
@@ -426,7 +486,11 @@
 <script src='assets/js/app.js'></script>
 <script src='assets/js/models/state-model.js'></script>
 <script src='assets/js/models/species-models.js'></script>
+<script src='assets/js/models/entities-models.js'></script>
+<script src='assets/js/models/countries-models.js'></script>
 <script src='assets/js/collections/species-collection.js'></script>
+<script src='assets/js/collections/entities-collection.js'></script>
+<script src='assets/js/collections/countries-collection.js'></script>
 <script src='assets/js/routers/app-routers.js'></script>
 <script src='assets/js/views/app-view.js'></script>
 <script src='assets/js/views/selector-view.js'></script>
