@@ -48,46 +48,28 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 					this.$el.show();
 				} else { /* this is not a species group : fetch the complete information about it if needed */
 					var speciesModel = sharksDB.Collections.speciesCollection.get(species);
+					var targetView = this;
 					$('#displayTitle').html(speciesModel.get('englishName'));
 					if (speciesModel.get('completed') == false) { /* we have to fetch the data*/
 						speciesModel.url =  'http://figisapps.fao.org/figis/sharks/rest/species'+'/'+species;
 						speciesModel.fetch({
 							success : function () {
 								speciesModel.set('completed', true);
-								$('#centralPanel').html(sharksDB.Views.CentralPanel.prototype.speciesTemplate({dataArray: speciesModel.get('measures').sort(yearSort)}));
+								$('#centralPanel').html(targetView.speciesTemplate({dataArray: speciesModel.get('measures').sort(yearSort)}));
 								sharksDB.Models.currentState.trigger("modelUpdated");
+								targetView.$el.show(); /* display the map div before loading the map to get correct dimension */
+								renderSpeciesDistributionMap(speciesModel, species);
 							}
 						});
 					} else {
 						this.$el.html(this.speciesTemplate({dataArray: speciesModel.get('measures').sort(yearSort)}));
+						this.$el.show(); /* display the map div before loading the map to get correct dimension */
+						renderSpeciesDistributionMap(speciesModel, species);
 					}
 
-					$('#map').show();
-					this.$el.show(); /* display the map div before loading the map to get correct dimension */
-
-					/* load map from mapbox if needed */
-					if (sharksDB.Map.map == undefined) {
-						setBackgroundMap();
-					} else { /* map was already loaded, we must clean zone layer before adding new one */
-						sharksDB.Map.map.removeLayer(sharksDB.Map.maritimeZoneLayer); /* remove the wms tile of rfmo competence zone */
-						d3.select("#layerCountries").selectAll("g").remove(); /* remove all highlighted countries if needed */
-					}
-					sharksDB.Map.map.setView([25,0], 2);
-
-					/* get the distribution area from FAO server */
-					sharksDB.Map.maritimeZoneLayer = L.tileLayer.wms('http://www.fao.org/figis/geoserver/wms', {
-						dpiMode: 7,
-						layers: 'fifao:SPECIES_DIST',
-						cql_filter: "ALPHACODE='"+species+"'",
-						featureCount: 10,
-						format: 'image/png',
-						transparent: true,
-						zIndex: 1
-					}).setOpacity(0.85)
-					.addTo(sharksDB.Map.map);
 				}
+			}
 
-							}
 			if (this.model.get('rfmo')!='') {
 				var rfmo = this.model.get('rfmo');
 				var entitiesModel = sharksDB.Collections.entitiesCollection.get(rfmo);
@@ -235,4 +217,31 @@ function renderCountriesOnRFMOMap(modelMembers) {
 
 		reset();
 	});
+}
+
+function renderSpeciesDistributionMap(modelSpecies, species) {
+	if (modelSpecies.get('hasDistributionMap') == true) { /* render the distribution map if there is one */
+		$('#map').show();
+
+		/* load map from mapbox if needed */
+		if (sharksDB.Map.map == undefined) {
+			setBackgroundMap();
+		} else { /* map was already loaded, we must clean zone layer before adding new one */
+			sharksDB.Map.map.removeLayer(sharksDB.Map.maritimeZoneLayer); /* remove the wms tile of rfmo competence zone */
+			d3.select("#layerCountries").selectAll("g").remove(); /* remove all highlighted countries if needed */
+		}
+		sharksDB.Map.map.setView([25,0], 2);
+
+		/* get the distribution area from FAO server */
+		sharksDB.Map.maritimeZoneLayer = L.tileLayer.wms('http://www.fao.org/figis/geoserver/wms', {
+			dpiMode: 7,
+			layers: 'fifao:SPECIES_DIST',
+			cql_filter: "ALPHACODE='"+species+"'",
+			featureCount: 10,
+			format: 'image/png',
+			transparent: true,
+			zIndex: 1
+		}).setOpacity(0.85)
+		.addTo(sharksDB.Map.map);
+	}
 }
