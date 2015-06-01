@@ -179,7 +179,7 @@ function renderCountriesOnRFMOMap(modelMembers) {
 		path2 = d3.geo.path().projection(transform2);
 
 		var selectedCountries = d3.select("#layerCountries").selectAll("g")
-			.data(topojson.feature(collection, collection.objects.countries110).features.filter(function (d){
+			.data(topojson.feature(collection, collection.objects.countries).features.filter(function (d){
 				/* check country */
 				if ($.inArray(d.id, entityCountryList) != -1) {
 					return true;
