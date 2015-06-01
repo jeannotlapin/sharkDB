@@ -172,21 +172,21 @@ function renderCountriesOnRFMOMap(modelMembers) {
 		entityCountryList.push(d.code);
 	});
 
-	d3.json("data/geodata/countries110.json", function(collection) {
+	d3.json("data/geodata/countries110.json", function(error, collection) {
 		var transform = d3.geo.transform({point: projectPoint}),
 		path = d3.geo.path().projection(transform);
 		var transform2 = d3.geo.transform({point: projectPoint2}),
 		path2 = d3.geo.path().projection(transform2);
 
 		var selectedCountries = d3.select("#layerCountries").selectAll("g")
-			.data(collection.features.filter(function (d){
+			.data(topojson.feature(collection, collection.objects.countries110).features.filter(function (d){
 				/* check country */
-				if ($.inArray(d.properties.iso_a3, entityCountryList) != -1) {
+				if ($.inArray(d.id, entityCountryList) != -1) {
 					return true;
 				}
 				return false;
 			}),
-			function (d){return d.properties.iso_a3});
+			function (d){return d.id});
 
 		selectedCountries.exit().remove(); /* on selection exit remove the g element */
 
