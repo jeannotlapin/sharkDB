@@ -200,6 +200,25 @@
 		border-top-right-radius: 9px !important;
 		border-bottom-right-radius: 9px !important;
 	}
+	.marineAreaHatched {
+		fill:url(#pattern-stripe);
+		fill-opacity:0.7;
+		stroke:#24a6cf;
+		stroke-opacity: 0.2;
+	}
+	.marineArea {
+		fill : #24a6cf;
+		fill-opacity:0.7;
+		stroke:#24a6cf;
+		stroke-opacity: 0.2;
+	}
+
+	.limit200nm {
+		fill : none;
+		stroke:#888888;
+		stroke-opacity: 0.8;
+	}
+
 	.countryHigh {
 		fill : #3dd5a8;
 		fill-opacity:0.25;
@@ -277,6 +296,19 @@
     </style>
 </head>
 <body>
+<div style='float:left; height:0px'>
+<svg>
+	<defs>
+		<pattern id="pattern-stripe"
+			width="4" height="4"
+			patternUnits="userSpaceOnUse"
+			patternTransform="rotate(40)">
+			<rect width="1" height="2" transform="translate(0,0)" fill="#24a6cf"></rect>
+		</pattern>
+	</defs>
+</svg>
+</div>
+
 <div id='wrapper'>
   <!-- Div to display full size image of species when thumbnail in side panel is clicked -->
   <div id="speciesModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
@@ -306,19 +338,19 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul id="navSelector" class="nav navbar-nav">
         <li class="dropdown">
-	<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentRFMO">Entities</span><span class="caret"></span></a>
-	<ul class="dropdown-menu" role="menu" id="RFMODropdown"></ul>
+		<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentRFMO">Entities</span><span class="caret"></span></a>
+		<ul class="dropdown-menu" role="menu" id="RFMODropdown"></ul>
         </li>
         <li class="dropdown">
-	<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentSpeciesGroup">Species</span><span class="caret"></span></a>
-	<ul class="dropdown-menu" role="menu">
-		<li class="speciesGroups"><ul class="doubleCol speciesGroups" role="menu" id="speciesGroupsDropdown"></ul></li>
-		<li class='species'><ul class="doubleCol species" role="menu" id="speciesListDropdown"></ul></li>
-	</ul>
+		<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentSpeciesGroup">Species</span><span class="caret"></span></a>
+		<ul class="dropdown-menu" role="menu">
+			<li class="speciesGroups"><ul class="doubleCol speciesGroups" role="menu" id="speciesGroupsDropdown"></ul></li>
+			<li class='species'><ul class="doubleCol species" role="menu" id="speciesListDropdown"></ul></li>
+		</ul>
         </li>
         <li class="dropdown">
-	<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentCountry">Country</span><span class="caret"></span></a>
-	<ul class="dropdown-menu tripleCol" role="menu" id="countryDropdown"></ul>
+		<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ><span id="currentCountry">Country</span><span class="caret"></span></a>
+		<ul class="dropdown-menu tripleCol" role="menu" id="countryDropdown"></ul>
         </li>
       </ul>
     </div><!-- /.navbar-collapse -->
