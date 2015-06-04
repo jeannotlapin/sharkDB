@@ -26,13 +26,15 @@ sharksDB.Views.Selector = Backbone.View.extend({
 			});
 
 			sharksDB.Collections.speciesGroupsCollection.models.forEach(function(model) {
-				this.$('#speciesGroupsDropdown').append(ddThumbnailTemplate({type:'species', data:model.get('code'), name:model.get('name'), thumbnailPath:"groups/"+model.get('name').toLowerCase().replace(/ /g, "_")+"-drawing-small.jpg"}));
+				//this.$('#speciesGroupsDropdown').append(ddThumbnailTemplate({type:'species', data:model.get('code'), name:model.get('name'), thumbnailPath:"groups/"+model.get('name').toLowerCase().replace(/ /g, "_")+"-drawing-small.jpg"}));
+				this.$('#speciesGroupsDropdown').append(ddTemplate({type:'species', data:model.get('code'), name:model.get('name')}));
 			});
 			if (sharksDB.Collections.speciesGroupsCollection.models.length%2==1) {
 				this.$('#speciesGroupsDropdown').append("<li> </li>");
 			}
 			sharksDB.Collections.speciesCollection.models.forEach(function(model) {
-				this.$('#speciesListDropdown').append(ddThumbnailTemplate({type:'species', data:model.get('alphaCode'), name:model.get('englishName'), thumbnailPath:"species/"+model.get('scientificName').toLowerCase().replace(/ /g, "_")+"-drawing-small.jpg"}));
+				//this.$('#speciesListDropdown').append(ddThumbnailTemplate({type:'species', data:model.get('alphaCode'), name:model.get('englishName'), thumbnailPath:"species/"+model.get('scientificName').toLowerCase().replace(/ /g, "_")+"-drawing-small.jpg"}));
+				this.$('#speciesListDropdown').append(ddTemplate({type:'species', data:model.get('alphaCode'), name:model.get('englishName')}));
 			});
 			if (sharksDB.Collections.speciesCollection.models.length%2==1) {
 				this.$('#speciesListDropdown').append("<li> </li>");
