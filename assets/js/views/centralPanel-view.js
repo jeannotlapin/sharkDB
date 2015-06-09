@@ -96,7 +96,11 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 				/* Add the rfmo area layer */
 				d3.json("http://npasc.al:1337?figis/geoserver/rfb/ows?service=WFS&version=1.0.0&request=GetFeature&outputFormat=json&typeName=RFB_"+rfmo, function(error, collection) {
 					if (collection.bbox != undefined) {
-						sharksDB.Map.projection.rotate([-(collection.bbox[0]+collection.bbox[2])/2,0,0]);
+						if (collection.bbox[0]==-180 && collection.bbox[2]==180 && collection.objects.marineAreas.geometries.length>1) {
+							sharksDB.Map.projection.rotate([checkBbox(collection.objects.marineAreas.geometries),0,0]);
+						} else {
+							sharksDB.Map.projection.rotate([-(collection.bbox[0]+collection.bbox[2])/2,0,0]);
+						}
 						sharksDB.Map.map.selectAll("path").attr("d", sharksDB.Map.path); /* update all path on the map */
 					}
 
@@ -151,6 +155,31 @@ function poayearSort(a,b) {
 	 if (+a.poAYear<+b.poAYear) return 1;
 	 if (a.title>b.title) return 1;
 	 return -1;
+}
+function checkBbox(geometries) {
+	var longitudes = [];
+	var minWest=360, maxEast=0;
+	geometries.forEach(function (d) {
+		var west = d.properties.bbox[0];
+		var east = d.properties.bbox[2];
+		if (west<0) {
+			if (east<0) {
+				longitudes.push([west+360,east+360]);
+			} else {
+				longitudes.push([west+360,360]);
+				longitudes.push([0,east]);
+			}
+		} else {
+			longitudes.push([west,east]);
+		}
+	});
+	longitudes.forEach(function (d) {
+		if (d[0]<minWest) minWest=d[0];
+		if (d[1]>maxEast) maxEast=d[1];
+	});
+
+	var mean = (minWest+maxEast)/2;
+	return (mean<180)?mean:mean-180;
 }
 
 /* Load background map and 200nm limit WMS layer from FAO server */
@@ -284,7 +313,11 @@ function renderSpeciesDistributionMap(modelSpecies, species) {
 		/* Add the species distribution layer */
 		d3.json("http://npasc.al:1337?figis/geoserver/species/ows?service=WFS&version=1.0.0&request=GetFeature&outputFormat=json&typeName=SPECIES_DIST_"+species, function(error, collection) {
 			if (collection.bbox != undefined) {
-				sharksDB.Map.projection.rotate([-(collection.bbox[0]+collection.bbox[2])/2,0,0]);
+				if (collection.bbox[0]==-180 && collection.bbox[2]==180 && collection.objects.marineAreas.geometries.length>1) {
+					sharksDB.Map.projection.rotate([checkBbox(collection.objects.marineAreas.geometries),0,0]);
+				} else {
+					sharksDB.Map.projection.rotate([-(collection.bbox[0]+collection.bbox[2])/2,0,0]);
+				}
 				sharksDB.Map.map.selectAll("path").attr("d", sharksDB.Map.path); /* update all path on the map */
 			}
 
