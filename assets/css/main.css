@@ -1,0 +1,235 @@
+body, html {
+	height: 100%;
+}
+#wrapper {
+	min-height: 100%;
+	position: relative;
+}
+#mainContainer {
+	padding-bottom: 1.5em;
+}
+.tableHeader {
+	background-color : #3db5d8;
+}
+.dropdown-menu li a {
+	padding: 2px 13px;
+}
+.activeCountry, .activeRFMO, .activeSpecies{
+	background-color : #edf5fe;
+}
+.activeCountry:hover, .activeRFMO:hover, .doclink:hover{
+	background-color : #e7f0f8;
+	cursor:grab;
+}
+.list-group-item {
+	padding: 5px 12px;
+}
+.list-group-item:first-child {
+	border-top-right-radius: 9px;
+}
+ul.doubleCol {
+	width:32em;
+	padding:0;
+	clear:both;
+}
+
+ul.doubleCol li {
+	width: 50%;
+	height: auto;
+	overflow: hidden;
+}
+
+ul.doubleCol li:nth-child(odd) {
+	float: left;
+}
+
+.doubleCol > li > a, .doubleCol > li > a:focus {
+	clear: both;
+	color: #ffffff;
+	padding: 2px 13px;
+	display: block;
+	line-height: 1.4;
+	white-space: nowrap;
+	background-color: transparent;
+	font-size: 13px;
+	font-weight: 300;
+	text-decoration:none;
+}
+
+ul.tripleCol {
+	width:32em;
+	padding:0;
+	clear:both;
+}
+
+ul.tripleCol li {
+	width: 33%;
+	height: auto;
+	overflow: hidden;
+}
+
+ul.tripleCol li:nth-child(3n+2) { 
+	float: left;
+}
+
+ul.tripleCol li:nth-child(3n+1)  {
+	float: left;
+}
+
+.tripleCol > li > a, .tripleCol > li > a:focus {
+	clear: both;
+	color: #ffffff;
+	padding: 2px 13px;
+	display: block;
+	line-height: 1.4;
+	white-space: nowrap;
+	background-color: transparent;
+	font-size: 13px;
+	font-weight: 300;
+	text-decoration:none;
+}
+
+ul.speciesGroups > li > a, ul.speciesGroups > li > a:focus {
+	font-weight: 600;
+}
+
+li.species {
+	border-top: 1px solid white;\
+	background-color: #067fa2;
+}
+.navbar-default ul.dropdown-menu li ul.species > li {
+	background-color: #067fa2;
+}
+
+ul.species > li > a:hover {
+	background-color: #24a6cf !important;
+}
+
+a.selectedSpecies {
+	background-color: #24a6cf !important;
+}
+
+.navbar-default ul.dropdown-menu li ul.species > li > a {
+	background-color: #067fa2;
+}
+
+li.species, ul.species {
+	background-color: #067fa2;
+	display: block;
+	clear:both;
+	width: 100%;
+}
+
+
+.linkCol {
+	width: 2.5em;
+}
+#centralPanel{
+	border-top:none;
+	margin-bottom:0;
+}
+.noBorder {
+	border:none;
+}
+
+li.noBorder ul {
+	margin-bottom: 5px;
+	margin-top: 5px;
+}
+
+.familyTitle {
+	font-size: 125%;
+	font-weight: 500;
+}
+
+body {
+	background-image: url(img/opening.jpg);
+	background-size: 100%;
+}
+
+.navbar-default {
+	background-color:#24a6cf;
+	font-size:115%;
+	margin-bottom:0.2em;
+}
+
+.navbar-default .navbar-nav li a:focus, .navbar-default .navbar-nav li a:hover, .navbar-default .navbar-nav li.open a, .navbar-default .navbar-nav li.open a:focus,.navbar-default .navbar-nav li.open a.dropdown-toggle:hover {
+	background-color:#00789b;
+}
+.navbar-default .navbar-nav li.open a:hover, .tableHeader, .panel-info .panel-heading {
+	background-color:#24a6cf;
+}
+
+.navbar-default ul.dropdown-menu {
+	background-color:#00789b;
+	border-top-right-radius: 9px !important;
+	border-bottom-right-radius: 9px !important;
+}
+span.langAbv {
+	color: #888888;
+}
+div.commonName {
+	font-weight: 500;
+	font-size: 110%;
+}
+div.scientificName {
+	text-transform: capitalize;
+	font-style: italic;
+	color: #888888;
+}
+#displayTitle {
+	margin-top:0;
+}
+
+.ddthumbnail img{
+	width: 24px;
+	border: 1px solid #24a6cf;
+	border-radius: 4px;
+	margin-right:3px;
+	opacity: 0.9;
+}
+
+.speciesFamilyThumbnail {
+	width: 30px;
+	border: 1px solid #24a6cf;
+	border-radius: 4px;
+	margin-right:3px;
+}
+
+#speciesGroupsDropdown li a,
+#speciesListDropdown li a {
+	padding: 1px;
+	padding-left: 3px;
+}
+#RFMODropdown {
+	min-width: 8em;
+}
+
+#RFMODropdown li a.hasNoMeasure {
+	font-style: italic;
+	background-color: #33587b;
+	color: #BBBBBB;
+}
+
+#RFMODropdown li a.hasNoMeasure:hover {
+	background-color:#4488ab;
+	color: #DDDDDD;
+}
+
+.leaflet-bottom, .leaflet-top {
+	z-index:990 !important;
+}
+
+.footer {
+	background-color:#24a6cf;
+	color: 	#d0d0d0;
+	padding-bottom:3px;
+	position: absolute;
+	height: 1.5em;
+	bottom: 0;
+	left: 0;
+	width:100%;
+}
+.footer a{
+	color: 	#F8F8F8;
+}

@@ -82,7 +82,7 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 				if (sharksDB.Map.map == undefined) {
 					setBackgroundMap();
 				} else { /* map was already loaded */
-					d3.select("#layerMarineArea").selectAll("g").remove(); /* remove previous marine Area layer, it would have been when new layer is loaded but it may be long so wipe it out now */
+					d3.select("#layerMarineArea").selectAll("path").remove(); /* remove previous marine Area layer, it would have been when new layer is loaded but it may be long so wipe it out now */
 				}
 
 				/* get extent information(do we really need that when switched to all d3?) */
@@ -93,6 +93,23 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 					})
 				}*/
 
+				/* Add the rfmo area layer */
+				d3.json("http://npasc.al:1337?figis/geoserver/rfb/ows?service=WFS&version=1.0.0&request=GetFeature&outputFormat=json&typeName=RFB_"+rfmo, function(error, collection) {
+					if (collection.bbox != undefined) {
+						sharksDB.Map.projection.rotate([-(collection.bbox[0]+collection.bbox[2])/2,0,0]);
+						sharksDB.Map.map.selectAll("path").attr("d", sharksDB.Map.path); /* update all path on the map */
+					}
+
+					var rfmoCompetenceAreas = d3.select("#layerMarineArea").selectAll("path")
+						.data(topojson.feature(collection, collection.objects.marineAreas).features, function (d){return d.id});
+
+					rfmoCompetenceAreas.exit().remove(); /* on selection exit remove the path elements */
+
+					rfmoCompetenceAreas.enter() /* append a g element on enter */
+						.append("path").attr("d", sharksDB.Map.path).attr("class", "marineArea");
+				});
+
+				/* add countries (we may need to fetch additionnal information for that) */
 				var targetView = this;
 				if (entitiesModel.get('completed') == false) { /* we have to fetch the data*/
 					entitiesModel.url =  'http://figisapps.fao.org/figis/sharks/rest/managemententities'+'/'+rfmo;
@@ -111,39 +128,7 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 					renderCountriesOnRFMOMap(entitiesModel.get('members'));
 				}
 
-				//sharksDB.Map.map.setView(sharksDB.Collections.RFMOInfoList[rfmo].map, 2); TODO: get the zoom from a geaFeature call
-				sharksDB.Map.map.setView([0, 25], 2);
-
-				/* Add the rfmo area layer */
-				d3.json("http://npasc.al:1337?figis/geoserver/rfb/ows?service=WFS&version=1.0.0&request=GetFeature&outputFormat=json&typeName=RFB_"+rfmo, function(error, collection) {
-					var transform = d3.geo.transform({point: projectPoint}),
-					path = d3.geo.path().projection(transform);
-
-					var selectedCountries = d3.select("#layerMarineArea").selectAll("path")
-						.data(collection.features, function (d){return d.id});
-
-					selectedCountries.exit().remove(); /* on selection exit remove the g element */
-
-					var rfmoArea = selectedCountries.enter() /* append a g element on enter */
-						.append("path");
-
-					sharksDB.Map.map.on("viewreset", reset);
-
-					/* Draw the SVG paths for countries. */
-					function reset() {
-						rfmoArea.attr("d", path); /* on current world [-180,180]*/
-						sharksDB.Map.map._updateSvgViewport(); /* make sure we update correctly svg layer translate attribute */
-					}
-
-					/* Use Leaflet to implement a D3 geometric transformation */
-					function projectPoint(x, y) {
-						var point = sharksDB.Map.map.latLngToLayerPoint(new L.LatLng(y, x));
-						this.stream.point(point.x, point.y);
-					}
-
-					reset();
-				});
-			}
+							}
 			return this;
 		},
 
@@ -170,46 +155,92 @@ function poayearSort(a,b) {
 
 /* Load background map and 200nm limit WMS layer from FAO server */
 function setBackgroundMap() {
-	sharksDB.Map.map = L.mapbox.map('map', 'jeannotlapin.lcld15nl', {worldCopyJump: false}).setView([0,0], 2);
 
-	/* initialise svg layer */
-	sharksDB.Map.map._initPathRoot();
+	var width = document.getElementById('map').offsetWidth;
+	var height = width / 2;
+
+	var scale0 = width / 6;
+	var zoom = d3.behavior.zoom()
+		.translate([width / 2, height / 2])
+		.scale(scale0)
+		.scaleExtent([scale0, 8 * scale0])
+		.on("zoom", zoomed);
+
+	/* create projection */
+	sharksDB.Map.projection = d3.geo.naturalEarth()
+			.precision(.1)
+			.center([0, 0])
+			.translate([width/2,height/2])
+			.scale(width / 6 )
+			.rotate([0,0,0]);
+
+	var path = d3.geo.path().projection(sharksDB.Map.projection);
+	sharksDB.Map.path = path;
+
+	/* create svg layer for sphere around the world and sea background */
+	sharksDB.Map.map = d3.select("#map").append("svg")
+		.attr("width", width)
+		.attr("height", height);
+
+	/* attach zoom and panning management */
+	sharksDB.Map.map
+		.call(zoom)
+		.call(zoom.event);
+
+	/* background and border: draw a sphere around the world */
+	sharksDB.Map.map.append("g").append("path")
+		.datum({type: "Sphere"})
+		.attr("id", "sphere")
+		.attr("d", path);
+
+	/* and groups layer */
 	var svg = d3.select("#map").select("svg"),
-	    g = svg.append("g").attr("id", "layerCountries");
-	g.classed('countryHigh', true); /* set class to layerCountries g element */
-	svg = d3.select("#map").select("svg"),
-	    g = svg.append("g").attr("id", "layerMarineArea");
-	g.classed('marineArea', true); /* set class to layerMarineArea g element */
+	    g = svg.append("g").attr("id", "layerLand");
+
 	svg = d3.select("#map").select("svg"),
 	    g = svg.append("g").attr("id", "layer200nm");
-	g.classed('limit200nm', true); /* set class to layer200nm g element */
 
+	svg = d3.select("#map").select("svg"),
+	    g = svg.append("g").attr("id", "layerCountries");
+
+	svg = d3.select("#map").select("svg"),
+	    g = svg.append("g").attr("id", "layerMarineArea");
+
+	/* set the background layer : all countries (not European Union) */
+	d3.json("data/geodata/countries110.json", function(error, collection) {
+		var selectedCountries = d3.select("#layerLand").selectAll("path")
+			.data(topojson.feature(collection, collection.objects.countries).features.filter(function (d){if (d.id!='EUR') return true; return false;})).enter().append("path").attr("d", path).attr("class", "backgroundLand");
+	});
 
 	/* add the 200nm limit from stored topojson file built from geojson retrieved on FAO server */
 	d3.json("data/geodata/limit200nm.json", function(error, collection) {
-		var transform = d3.geo.transform({point: projectPoint}),
-		path = d3.geo.path().projection(transform);
-
 		var features = d3.select("#layer200nm").selectAll("path")
 			//.data(collection.features).enter().append("path");
-			.data(topojson.feature(collection, collection.objects.limit200nm).features).enter().append("path");
-
-		sharksDB.Map.map.on("viewreset", reset);
-
-		/* Draw the SVG paths for countries. */
-		function reset() {
-			features.attr("d", path); /* on current world [-180,180]*/
-			sharksDB.Map.map._updateSvgViewport(); /* make sure we update correctly svg layer translate attribute */
-		}
-
-		/* Use Leaflet to implement a D3 geometric transformation */
-		function projectPoint(x, y) {
-			var point = sharksDB.Map.map.latLngToLayerPoint(new L.LatLng(y, x));
-			this.stream.point(point.x, point.y);
-		}
-
-		reset();
+			.data(topojson.feature(collection, collection.objects.limit200nm).features).enter().append("path").attr("d", path).attr("class", "limit200nm");
 	});
+
+	/* manage zoom and panning */
+	function zoomed() {
+		sharksDB.Map.projection
+			.translate(zoom.translate())
+			.scale(zoom.scale());
+		sharksDB.Map.map.selectAll("path").attr("d",path);
+	}
+
+	/* redraw the map when the window has been resized */
+	d3.select(window).on("resize", redraw);
+
+	function redraw() {
+		width = document.getElementById('map').offsetWidth;
+		height = width / 2;
+		sharksDB.Map.map
+			.attr("width", width)
+			.attr("height", height);
+		projection
+			.translate([width/2,height/2])
+			.scale(width / 6 );
+		sharksDB.Map.map.selectAll("path").attr("d",path);
+	}
 }
 
 /* render countries on the RFMO maps, is out of the render function because must wait for the asynchronous fetch of entity data */
@@ -221,12 +252,7 @@ function renderCountriesOnRFMOMap(modelMembers) {
 	});
 
 	d3.json("data/geodata/countries110.json", function(error, collection) {
-		var transform = d3.geo.transform({point: projectPoint}),
-		path = d3.geo.path().projection(transform);
-		var transform2 = d3.geo.transform({point: projectPoint2}),
-		path2 = d3.geo.path().projection(transform2);
-
-		var selectedCountries = d3.select("#layerCountries").selectAll("g")
+		var selectedCountries = d3.select("#layerCountries").selectAll("path")
 			.data(topojson.feature(collection, collection.objects.countries).features.filter(function (d){
 				/* check country */
 				if ($.inArray(d.id, entityCountryList) != -1) {
@@ -239,31 +265,7 @@ function renderCountriesOnRFMOMap(modelMembers) {
 		selectedCountries.exit().remove(); /* on selection exit remove the g element */
 
 		var countryGroups =selectedCountries.enter() /* append a g element on enter */
-			.append("g");
-
-		var countryPathsWorld1 = countryGroups.append("path"); /* on enter: append 2 path elements in each g one : duplicate the world at +360 */
-		var countryPathsWorld2 = countryGroups.append("path");
-
-		sharksDB.Map.map.on("viewreset", reset);
-
-		/* Draw the SVG paths for countries. */
-		function reset() {
-			countryPathsWorld1.attr("d", path); /* on current world [-180,180]*/
-			countryPathsWorld2.attr("d", path2); /* on another world [180, 540]*/
-			sharksDB.Map.map._updateSvgViewport(); /* make sure we update correctly svg layer translate attribute */
-		}
-
-		/* Use Leaflet to implement a D3 geometric transformation */
-		function projectPoint(x, y) {
-			var point = sharksDB.Map.map.latLngToLayerPoint(new L.LatLng(y, x));
-			this.stream.point(point.x, point.y);
-		}
-		function projectPoint2(x, y) {
-			var point2 = sharksDB.Map.map.latLngToLayerPoint(new L.LatLng(y, x+360)); /* project on a world translated by 360° */
-			this.stream.point(point2.x, point2.y);
-		}
-
-		reset();
+			.append("path").attr("d", sharksDB.Map.path).attr("class", "countryHigh");
 	});
 }
 
@@ -275,42 +277,27 @@ function renderSpeciesDistributionMap(modelSpecies, species) {
 		if (sharksDB.Map.map == undefined) {
 			setBackgroundMap();
 		} else { /* map was already loaded */
-			d3.select("#layerCountries").selectAll("g").remove(); /* remove all highlighted countries if needed */
-			d3.select("#layerMarineArea").selectAll("g").remove(); /* remove previous marine Area layer, it would have been when new layer is loaded but it may be long so wipe it out now */
+			d3.select("#layerCountries").selectAll("path").remove(); /* remove all highlighted countries if needed */
+			d3.select("#layerMarineArea").selectAll("path").remove(); /* remove previous marine Area layer, it would have been when new layer is loaded but it may be long so wipe it out now */
 		}
-		sharksDB.Map.map.setView([25,0], 2);
 
 		/* Add the species distribution layer */
 		d3.json("http://npasc.al:1337?figis/geoserver/species/ows?service=WFS&version=1.0.0&request=GetFeature&outputFormat=json&typeName=SPECIES_DIST_"+species, function(error, collection) {
-			var transform = d3.geo.transform({point: projectPoint}),
-			path = d3.geo.path().projection(transform);
+			if (collection.bbox != undefined) {
+				sharksDB.Map.projection.rotate([-(collection.bbox[0]+collection.bbox[2])/2,0,0]);
+				sharksDB.Map.map.selectAll("path").attr("d", sharksDB.Map.path); /* update all path on the map */
+			}
 
 			var distributionAreas = d3.select("#layerMarineArea").selectAll("path")
-				.data(collection.features, function (d){return d.id});
+				.data(topojson.feature(collection, collection.objects.marineAreas).features, function (d){return d.id});
+			distributionAreas.exit().remove(); /* on selection exit remove the path elements */
 
-			distributionAreas.exit().remove(); /* on selection exit remove the path element */
-
-			var area = distributionAreas.enter() /* append a path element on enter */
-				.append("path");
+			var area = distributionAreas.enter() /* append a g element on enter */
+				.append("path").attr("d", sharksDB.Map.path).attr("class", "marineArea");
 
 			/* add marineAreaHatched class to the path matching a PRESENCE==2 feature */
 			area.filter(function (d){ if (d.properties.PRESENCE == 2) return true; return false}).attr("class", "marineAreaHatched");
 
-			sharksDB.Map.map.on("viewreset", reset);
-
-			/* Draw the SVG paths for countries. */
-			function reset() {
-				area.attr("d", path); /* on current world [-180,180]*/
-				sharksDB.Map.map._updateSvgViewport(); /* make sure we update correctly svg layer translate attribute */
-			}
-
-			/* Use Leaflet to implement a D3 geometric transformation */
-			function projectPoint(x, y) {
-				var point = sharksDB.Map.map.latLngToLayerPoint(new L.LatLng(y, x));
-				this.stream.point(point.x, point.y);
-			}
-
-			reset();
 		});
 	}
 }

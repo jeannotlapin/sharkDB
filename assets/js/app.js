@@ -20,7 +20,8 @@ window.sharksDB = {
 		/* maps: initialise mapbox token and set to undefined map and rfmoLayer variables */
 		L.mapbox.accessToken = 'pk.eyJ1IjoiamVhbm5vdGxhcGluIiwiYSI6Im5qNTl1QXcifQ.fex2-4xMOYtkSgwtkwRGBQ';
 		sharksDB.Map.map = undefined; /* this is useless, just to keep track of properties used in the Map object */
-		sharksDB.Map.maritimeZoneLayer = undefined;
+		sharksDB.Map.path = undefined;
+		sharksDB.Map.projection = undefined;
 
 		/* fetch from figis server the species general information and species groups complete information */
 		function getSpecies (callback) {
