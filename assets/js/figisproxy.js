@@ -76,7 +76,6 @@ function sendAnswer(content) {
 
 /* convert the geojson input buffer into a topojson, save it in cache and send it as query response */
 function convert2Topojson(inputBuffer) {
-	fs.writeFileSync('cache/marineAreas.json', inputBuffer);
 	function propertyTransform(d) {
 		return d.properties;
 	}
@@ -85,7 +84,7 @@ function convert2Topojson(inputBuffer) {
 		'pre-quantization': 1000000,
 		'post-quantization': 10000,
 		'coordinate-system': 'auto',
-		'stitch-poles': true,
+		'stitch-poles': false,
 		'property-transform': propertyTransform,
 		'minimum-area': 0,
 		'preserve-attached': true,
@@ -102,8 +101,8 @@ function convert2Topojson(inputBuffer) {
 	topojson.clockwise(topology, optionsTopojson);
 
 	var topojsonBuffer = JSON.stringify(topology);
-	fs.writeFile('cache/'+fileName, topojsonBuffer, "utf-8"); /* write it to file */
 	sendAnswer(topojsonBuffer); /* send it as answer */
+	fs.writeFile('cache/'+fileName, topojsonBuffer, "utf-8"); /* write it to file */
 }
 
 }).listen(port, 'figisproxy.npasc.al');
