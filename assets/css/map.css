@@ -5,12 +5,6 @@
 	border-top:none;
 }
 
-.marineAreaHatched {
-	fill:url(../../index.html#pattern-stripe);
-	fill-opacity:0.7;
-	stroke:#24a6cf;
-	stroke-opacity: 0.2;
-}
 .marineArea {
 	fill : #24a6cf;
 	fill-opacity:0.7;
