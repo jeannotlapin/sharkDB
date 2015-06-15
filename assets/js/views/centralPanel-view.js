@@ -82,27 +82,32 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 				if (sharksDB.Map.map == undefined) {
 					setBackgroundMap();
 				} else { /* map was already loaded */
-					d3.select("#layerMarineArea").selectAll("path").remove(); /* remove previous marine Area layer, it would have been when new layer is loaded but it may be long so wipe it out now */
+					resetMapLayers();
 				}
-
-				/* get extent information(do we really need that when switched to all d3?) */
-				/*if (entitiesModel.extent == undefined) {
-					d3.xml("http://npasc.al:1337?geonetwork/srv/en/csw?service=CSW&request=GetRecordById&Version=2.0.2&elementSetName=brief&outputSchema=http://www.isotc211.org/2005/gmd&id=fao-rfb-map-"+rfmo, "application/xml", function(error, d){
-						//console.log(d);
-						//console.log(d3.select(d));
-					})
-				}*/
 
 				/* Add the rfmo area layer */
 				d3.json("http://npasc.al:1337?figis/geoserver/rfb/ows?service=WFS&version=1.0.0&request=GetFeature&outputFormat=json&typeName=RFB_"+rfmo, function(error, collection) {
-					if (collection.bbox != undefined) {
-						if (collection.bbox[0]==-180 && collection.bbox[2]==180 && collection.objects.marineAreas.geometries.length>1) {
-							sharksDB.Map.projection.rotate([checkBbox(collection.objects.marineAreas.geometries),0,0]);
-						} else {
-							sharksDB.Map.projection.rotate([-(collection.bbox[0]+collection.bbox[2])/2,0,0]);
+					if (collection.bbox[1]<-85 && collection.bbox[3]<-40) {
+						if (sharksDB.Map.projection === sharksDB.Map.projectionNatural) {
+							var width = document.getElementById('map').offsetWidth;
+							var height = width;
+							sharksDB.Map.map.attr("height", width);
+							sharksDB.Map.projection = sharksDB.Map.projectionPolar;
+							sharksDB.Map.path = d3.geo.path().projection(sharksDB.Map.projection);
+							sharksDB.Map.projection.rotate([0,0,0]).scale(width/4.2).translate([width/2,height/2]);
 						}
-						sharksDB.Map.map.selectAll("path").attr("d", sharksDB.Map.path); /* update all path on the map */
+					} else {
+						if (sharksDB.Map.projection === sharksDB.Map.projectionPolar) {
+							var width = document.getElementById('map').offsetWidth;
+							var height = width/2;
+							sharksDB.Map.map.attr("height", width/2);
+							sharksDB.Map.projection = sharksDB.Map.projectionNatural;
+							sharksDB.Map.path = d3.geo.path().projection(sharksDB.Map.projection);
+							sharksDB.Map.projection.scale(width/6).translate([width/2,height/2]);
+						}
+						sharksDB.Map.projection.rotate([checkBbox(collection.objects.marineAreas.geometries),0,0]);
 					}
+					sharksDB.Map.map.selectAll("path").attr("d", sharksDB.Map.path); /* update all path on the map */
 
 					var rfmoCompetenceAreas = d3.select("#layerMarineArea").selectAll("path")
 						.data(topojson.feature(collection, collection.objects.marineAreas).features, function (d){return d.id});
@@ -110,7 +115,7 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 					rfmoCompetenceAreas.exit().remove(); /* on selection exit remove the path elements */
 
 					rfmoCompetenceAreas.enter() /* append a g element on enter */
-						.append("path").attr("d", sharksDB.Map.path).attr("class", "marineArea");
+						.append("path").attr("d", sharksDB.Map.path).attr("class", "rfmoMarineArea");
 				});
 
 				/* add countries (we may need to fetch additionnal information for that) */
@@ -156,30 +161,37 @@ function poayearSort(a,b) {
 	 if (a.title>b.title) return 1;
 	 return -1;
 }
+
+/* TODO: this shall be performed on proxy/cache and stored in topojson bbox property */
 function checkBbox(geometries) {
-	var longitudes = [];
-	var minWest=360, maxEast=0;
+	var world360 = [];
+	if (geometries.length == 1) {
+		return -(geometries[0].properties.bbox[0]+geometries[0].properties.bbox[2])/2;
+	}
+
 	geometries.forEach(function (d) {
 		var west = d.properties.bbox[0];
 		var east = d.properties.bbox[2];
-		if (west<0) {
-			if (east<0) {
-				longitudes.push([west+360,east+360]);
-			} else {
-				longitudes.push([west+360,360]);
-				longitudes.push([0,east]);
-			}
-		} else {
-			longitudes.push([west,east]);
+		for (i=Math.floor(west); i<=Math.round(east); i++) {
+			world360.push((+i));
 		}
 	});
-	longitudes.forEach(function (d) {
-		if (d[0]<minWest) minWest=d[0];
-		if (d[1]>maxEast) maxEast=d[1];
+
+	var gap = 2, westBound=0, eastBound=360;
+	var last=world360.sort(function (a,b) {return a-b;})[0];
+	world360.push(last+360);
+
+	world360.forEach(function (d) {
+		//console.log ("d "+d+" last "+last+" gap "+gap+" d-last "+(d-last));
+		if (d-last>gap) {
+			gap = d-last;
+			westBound=last;
+			eastBound=d;
+		}
+		last = d;
 	});
 
-	var mean = (minWest+maxEast)/2;
-	return (mean<180)?mean:mean-180;
+	return -(((westBound+eastBound)/2+180)%180);
 }
 
 /* Load background map and 200nm limit WMS layer from FAO server */
@@ -196,15 +208,23 @@ function setBackgroundMap() {
 		.on("zoom", zoomed);
 
 	/* create projection */
-	sharksDB.Map.projection = d3.geo.naturalEarth()
+	sharksDB.Map.projectionNatural = d3.geo.naturalEarth()
 			.precision(.1)
 			.center([0, 0])
 			.translate([width/2,height/2])
 			.scale(width / 6 )
 			.rotate([0,0,0]);
 
-	var path = d3.geo.path().projection(sharksDB.Map.projection);
-	sharksDB.Map.path = path;
+	sharksDB.Map.projectionPolar = d3.geo.azimuthalEqualArea()
+			.precision(.1)
+			.center([0, 0])
+			.translate([width/2,height/2])
+			.scale(width / 8 )
+			.rotate([0,0,0]);
+
+	sharksDB.Map.projection = sharksDB.Map.projectionNatural; /* default is naturalEarth projection */
+
+	sharksDB.Map.path = d3.geo.path().projection(sharksDB.Map.projection);
 
 	/* create svg layer for sphere around the world and sea background */
 	sharksDB.Map.map = d3.select("#map").append("svg")
@@ -220,7 +240,7 @@ function setBackgroundMap() {
 	sharksDB.Map.map.append("g").append("path")
 		.datum({type: "Sphere"})
 		.attr("id", "sphere")
-		.attr("d", path);
+		.attr("d", sharksDB.Map.path);
 
 	/* and groups layer */
 	var svg = d3.select("#map").select("svg"),
@@ -230,22 +250,31 @@ function setBackgroundMap() {
 	    g = svg.append("g").attr("id", "layer200nm");
 
 	svg = d3.select("#map").select("svg"),
-	    g = svg.append("g").attr("id", "layerCountries");
-
-	svg = d3.select("#map").select("svg"),
 	    g = svg.append("g").attr("id", "layerMarineArea");
 
 	/* set the background layer : all countries (not European Union) */
 	d3.json("data/geodata/countries110.json", function(error, collection) {
-		var selectedCountries = d3.select("#layerLand").selectAll("path")
-			.data(topojson.feature(collection, collection.objects.countries).features.filter(function (d){if (d.id!='EUR') return true; return false;})).enter().append("path").attr("d", path).attr("class", "backgroundLand");
+		d3.select("#layerLand").selectAll("path")
+			.data(topojson.feature(collection, collection.objects.countries).features)
+				.enter()
+				.append("path")
+					.attr("d", sharksDB.Map.path)
+					.attr("class", "backgroundLand");
+
+		d3.select("#layerLand").selectAll("path")
+			.filter(function (d){
+				if (d.id == 'EUR') {
+					return true;
+				}
+				return false;
+		}).attr("class", 'EURbackgroundLand');
 	});
 
 	/* add the 200nm limit from stored topojson file built from geojson retrieved on FAO server */
 	d3.json("data/geodata/limit200nm.json", function(error, collection) {
 		var features = d3.select("#layer200nm").selectAll("path")
 			//.data(collection.features).enter().append("path");
-			.data(topojson.feature(collection, collection.objects.limit200nm).features).enter().append("path").attr("d", path).attr("class", "limit200nm");
+			.data(topojson.feature(collection, collection.objects.limit200nm).features).enter().append("path").attr("d", sharksDB.Map.path).attr("class", "limit200nm");
 	});
 
 	/* manage zoom and panning */
@@ -253,7 +282,7 @@ function setBackgroundMap() {
 		sharksDB.Map.projection
 			.translate(zoom.translate())
 			.scale(zoom.scale());
-		sharksDB.Map.map.selectAll("path").attr("d",path);
+		sharksDB.Map.map.selectAll("path").attr("d",sharksDB.Map.path);
 	}
 
 	/* redraw the map when the window has been resized */
@@ -265,10 +294,10 @@ function setBackgroundMap() {
 		sharksDB.Map.map
 			.attr("width", width)
 			.attr("height", height);
-		projection
+		sharksDB.Map.projection
 			.translate([width/2,height/2])
 			.scale(width / 6 );
-		sharksDB.Map.map.selectAll("path").attr("d",path);
+		sharksDB.Map.map.selectAll("path").attr("d",sharksDB.Map.path);
 	}
 }
 
@@ -276,26 +305,25 @@ function setBackgroundMap() {
 function renderCountriesOnRFMOMap(modelMembers) {
 	/* add countries highlighting layer using d3 */
 	var entityCountryList = []; /* get all member iso_a3 code in an array */
+	var isEUR = false;
 	modelMembers.forEach(function(d){
-		entityCountryList.push(d.code);
+		if (d.code!='EUR') {
+			entityCountryList.push(d.code);
+		} else {
+			isEUR = true;
+		}
 	});
 
-	d3.json("data/geodata/countries110.json", function(error, collection) {
-		var selectedCountries = d3.select("#layerCountries").selectAll("path")
-			.data(topojson.feature(collection, collection.objects.countries).features.filter(function (d){
-				/* check country */
-				if ($.inArray(d.id, entityCountryList) != -1) {
-					return true;
-				}
-				return false;
-			}),
-			function (d){return d.id});
-
-		selectedCountries.exit().remove(); /* on selection exit remove the g element */
-
-		var countryGroups =selectedCountries.enter() /* append a g element on enter */
-			.append("path").attr("d", sharksDB.Map.path).attr("class", "countryHigh");
-	});
+	d3.select("#layerLand").selectAll("path")
+		.filter(function (d){
+			if ($.inArray(d.id, entityCountryList) != -1) {
+				return true;
+			}
+			return false;
+		}).attr("class", 'backgroundLand countryHigh');
+	if (isEUR) {
+		$('path.EURbackgroundLand').attr("class", "EURcountryHigh");
+	}
 }
 
 function renderSpeciesDistributionMap(modelSpecies, species) {
@@ -306,20 +334,22 @@ function renderSpeciesDistributionMap(modelSpecies, species) {
 		if (sharksDB.Map.map == undefined) {
 			setBackgroundMap();
 		} else { /* map was already loaded */
-			d3.select("#layerCountries").selectAll("path").remove(); /* remove all highlighted countries if needed */
-			d3.select("#layerMarineArea").selectAll("path").remove(); /* remove previous marine Area layer, it would have been when new layer is loaded but it may be long so wipe it out now */
+			resetMapLayers();
+		}
+
+		if (sharksDB.Map.projection === sharksDB.Map.projectionPolar) {
+			var width = document.getElementById('map').offsetWidth;
+			var height = width/2;
+			sharksDB.Map.map.attr("height", width/2);
+			sharksDB.Map.projection = sharksDB.Map.projectionNatural;
+			sharksDB.Map.path = d3.geo.path().projection(sharksDB.Map.projection);
+			sharksDB.Map.projection.scale(width/6).translate([width/2,height/2]);
 		}
 
 		/* Add the species distribution layer */
 		d3.json("http://npasc.al:1337?figis/geoserver/species/ows?service=WFS&version=1.0.0&request=GetFeature&outputFormat=json&typeName=SPECIES_DIST_"+species, function(error, collection) {
-			if (collection.bbox != undefined) {
-				if (collection.bbox[0]==-180 && collection.bbox[2]==180 && collection.objects.marineAreas.geometries.length>1) {
-					sharksDB.Map.projection.rotate([checkBbox(collection.objects.marineAreas.geometries),0,0]);
-				} else {
-					sharksDB.Map.projection.rotate([-(collection.bbox[0]+collection.bbox[2])/2,0,0]);
-				}
-				sharksDB.Map.map.selectAll("path").attr("d", sharksDB.Map.path); /* update all path on the map */
-			}
+			sharksDB.Map.projection.rotate([checkBbox(collection.objects.marineAreas.geometries),0,0]);
+			sharksDB.Map.map.selectAll("path").attr("d", sharksDB.Map.path); /* update all path on the map */
 
 			var distributionAreas = d3.select("#layerMarineArea").selectAll("path")
 				.data(topojson.feature(collection, collection.objects.marineAreas).features, function (d){return d.id});
@@ -330,7 +360,20 @@ function renderSpeciesDistributionMap(modelSpecies, species) {
 
 			/* add marineAreaHatched class to the path matching a PRESENCE==2 feature */
 			area.filter(function (d){ if (d.properties.PRESENCE == 2) return true; return false}).attr("class", "marineAreaHatched");
-
 		});
 	}
+}
+
+function resetMapLayers() {
+	d3.select("#layerMarineArea").selectAll("path").remove(); /* remove previous marine Area layer, it would have been when new layer is loaded but it may be long so wipe it out now */
+	var width = document.getElementById('map').offsetWidth;
+	if  (sharksDB.Map.projection == sharksDB.Map.projectionNatural) {
+		var height = width / 2;
+		sharksDB.Map.projection.scale(width/6).translate([width/2,height/2]);
+	} else {
+		var height = width;
+		sharksDB.Map.projection.scale(width/4.2).translate([width/2,height/2]);
+	}
+	$('path.countryHigh').attr("class", "backgroundLand");
+	$('path.EURcountryHigh').attr("class", "EURbackgroundLand");
 }

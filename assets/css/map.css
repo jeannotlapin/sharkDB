@@ -6,10 +6,18 @@
 }
 
 .marineArea {
+	fill : #FF661B;
+	fill-opacity:0.9;
+	stroke:#FF661B;
+	stroke-opacity: 0.9;
+	fill-rule:nonzero;
+}
+
+.rfmoMarineArea {
 	fill : #24a6cf;
 	fill-opacity:0.7;
 	stroke:#24a6cf;
-	stroke-opacity: 0.2;
+	stroke-opacity: 0.9;
 	fill-rule:evenodd;
 }
 
@@ -19,11 +27,17 @@
 	stroke-opacity: 0.8;
 }
 
+.EURcountryHigh {
+	fill : #AD390E !important;
+	fill-opacity:0.8 !important;
+	stroke:#8D1900 !important;
+	stroke-opacity: 1 !important;
+}
 .countryHigh {
-	fill : #3dd5a8;
-	fill-opacity:0.25;
-	stroke:#3dd5a8;
-	stroke-opacity: 0.5;
+	fill : #AD390E !important;
+	fill-opacity:1 !important;
+	stroke:#8D1900 !important;
+	stroke-opacity: 1 !important;
 }
 
 .backgroundLand {
@@ -32,6 +46,11 @@
 	stroke:#f1dbca;
 	stroke-opacity:1;
 }
+
+.EURbackgroundLand {
+	display:none;
+}
+
 
 #sphere {
   stroke: #24a6cf;
