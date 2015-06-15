@@ -2,6 +2,7 @@ var http = require('http');
 var url = require('url');
 var fs = require('fs');
 var topojson = require("topojson");
+var rewind = require('geojson-rewind');
 
 var port = process.env.PORT || 1337;
 http.createServer(function(proxyReq, proxyResp) {
@@ -41,7 +42,15 @@ if (urlValid) {
 				});
 
 				res.on('end', function() {
-					convert2Topojson(JSON.parse(inputBuffer));
+					try {
+						convert2Topojson(rewind(JSON.parse(inputBuffer), false));
+					} catch (e) {
+						/* something is wrong fao server response, may be no map available for this one */
+						console.log('problem with request: ' + e.message);
+						proxyResp.writeHead(503);
+						proxyResp.write("No map available for "+fileName);
+						proxyResp.end();
+					}
 				});
 			});
 
