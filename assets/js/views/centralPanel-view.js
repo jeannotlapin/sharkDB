@@ -262,7 +262,6 @@ function setBackgroundMap() {
 				.data(topojson.feature(collection, collection.objects.countries).features)
 				.enter()
 				.append("path")
-				.attr("d", sharksDB.Map.path)
 				.attr("class", "backgroundLand");
 
 		d3.select("#layerLand").selectAll("path")
