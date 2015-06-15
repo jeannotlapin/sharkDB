@@ -34,7 +34,7 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 					});
 				} else {
 					$('#displayTitle').html(countriesModel.get('name'));
-					this.$el.html(this.countryTemplate({dataArray: countriesModel.get('poas').sort(poayearSort)}));
+					this.$el.html(targetView.countryTemplate({poasArray: countriesModel.get('poas').sort(poayearSort), othersArray: countriesModel.get('others').sort(yearSort)}));
 				}
 
 				this.$el.show();
