@@ -204,7 +204,7 @@ function setBackgroundMap() {
 	var zoom = d3.behavior.zoom()
 		.translate([width / 2, height / 2])
 		.scale(scale0)
-		.scaleExtent([scale0, 8 * scale0])
+		.scaleExtent([scale0, 4 * scale0])
 		.on("zoom", zoomed);
 
 	/* create projection */
@@ -254,12 +254,10 @@ function setBackgroundMap() {
 
 	/* set the background layer : all countries (not European Union) */
 	d3.json("data/geodata/countries110.json", function(error, collection) {
-		d3.select("#layerLand").selectAll("path")
-			.data(topojson.feature(collection, collection.objects.countries).features)
-				.enter()
-				.append("path")
-					.attr("d", sharksDB.Map.path)
-					.attr("class", "backgroundLand");
+		d3.select("#layerLand").append("path")
+			.datum(topojson.feature(collection, collection.objects.countries))
+				.attr("d", sharksDB.Map.path)
+				.attr("class", "backgroundLand");
 
 		d3.select("#layerLand").selectAll("path")
 			.filter(function (d){
@@ -272,9 +270,10 @@ function setBackgroundMap() {
 
 	/* add the 200nm limit from stored topojson file built from geojson retrieved on FAO server */
 	d3.json("data/geodata/limit200nm.json", function(error, collection) {
-		var features = d3.select("#layer200nm").selectAll("path")
-			//.data(collection.features).enter().append("path");
-			.data(topojson.feature(collection, collection.objects.limit200nm).features).enter().append("path").attr("d", sharksDB.Map.path).attr("class", "limit200nm");
+		var features = d3.select("#layer200nm").append("path")
+			.datum(topojson.feature(collection, collection.objects.limit200nm))
+				.attr("d", sharksDB.Map.path)
+				.attr("class", "limit200nm");
 	});
 
 	/* manage zoom and panning */
