@@ -109,13 +109,10 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 					}
 					sharksDB.Map.map.selectAll("path").attr("d", sharksDB.Map.path); /* update all path on the map */
 
-					var rfmoCompetenceAreas = d3.select("#layerMarineArea").selectAll("path")
-						.data(topojson.feature(collection, collection.objects.marineAreas).features, function (d){return d.id});
-
-					rfmoCompetenceAreas.exit().remove(); /* on selection exit remove the path elements */
-
-					rfmoCompetenceAreas.enter() /* append a g element on enter */
-						.append("path").attr("d", sharksDB.Map.path).attr("class", "rfmoMarineArea");
+					d3.select("#layerMarineArea").append("path")
+						.datum(topojson.feature(collection, collection.objects.marineAreas))
+						.attr("d", sharksDB.Map.path)
+						.attr("class", "rfmoMarineArea");
 				});
 
 				/* add countries (we may need to fetch additionnal information for that) */
@@ -182,7 +179,6 @@ function checkBbox(geometries) {
 	world360.push(last+360);
 
 	world360.forEach(function (d) {
-		//console.log ("d "+d+" last "+last+" gap "+gap+" d-last "+(d-last));
 		if (d-last>gap) {
 			gap = d-last;
 			westBound=last;
@@ -191,7 +187,7 @@ function checkBbox(geometries) {
 		last = d;
 	});
 
-	return -(((westBound+eastBound)/2+180)%180);
+	return -(((westBound+eastBound)/2+180)%360);
 }
 
 /* Load background map and 200nm limit WMS layer from FAO server */
