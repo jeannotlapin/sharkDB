@@ -24,6 +24,7 @@ window.sharksDB = {
 		sharksDB.Map.projectionNatural = undefined;
 		sharksDB.Map.projectionPolar = undefined;
 		sharksDB.Map.backgroundLoaded = false; /* flag for background map loaded or not */
+		sharksDB.Map.EURCountries = ["AUT","BEL","BGR","CYP","CZE","DNK","EST","FIN","FRA","DEU","GRC","HUN","IRL","ITA","LVA","LTU","LUX","MLT","NLD","POL","PRT","ROU","SVK","SVN","ESP","SWE","GBR", "HRV"]; /* iso_a3 list of members of European union */
 
 		/* fetch from figis server the species general information and species groups complete information */
 		function getSpecies (callback) {

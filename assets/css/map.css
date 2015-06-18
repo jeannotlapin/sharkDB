@@ -27,17 +27,16 @@
 	stroke-opacity: 0.8;
 }
 
-.EURcountryHigh {
-	fill : #AD390E !important;
-	fill-opacity:0.8 !important;
-	stroke:#8D1900 !important;
-	stroke-opacity: 1 !important;
-}
 .countryHigh {
 	fill : #AD390E !important;
 	fill-opacity:1 !important;
 	stroke:#8D1900 !important;
 	stroke-opacity: 1 !important;
+}
+
+.focusedCountry {
+	fill : #FF661B !important;
+	stroke : #FFFFFF !important;
 }
 
 .backgroundLand {
@@ -46,11 +45,6 @@
 	stroke:#f1dbca;
 	stroke-opacity:1;
 }
-
-.EURbackgroundLand {
-	display:none;
-}
-
 
 #sphere {
   stroke: #24a6cf;

@@ -154,17 +154,10 @@ function setBackgroundMap() {
 				.data(topojson.feature(collection, collection.objects.countries).features)
 				.enter()
 				.append("path")
+				.attr("id", function (d) {return d.id;})
 				.attr("class", "backgroundLand");
 
 		sharksDB.Map.backgroundLoaded = true;
-
-		d3.select("#layerLand").selectAll("path")
-			.filter(function (d){
-				if (d.id == 'EUR') {
-					return true;
-				}
-				return false;
-		}).attr("class", 'EURbackgroundLand');
 	});
 
 	/* add the 200nm limit from stored topojson file built from geojson retrieved on FAO server */
@@ -212,12 +205,11 @@ function checkBbox(geometries) {
 function renderCountriesOnRFMOMap(modelMembers) {
 	/* add countries highlighting layer using d3 */
 	var entityCountryList = []; /* get all member iso_a3 code in an array */
-	var isEUR = false;
 	modelMembers.forEach(function(d){
 		if (d.code!='EUR') {
 			entityCountryList.push(d.code);
 		} else {
-			isEUR = true;
+			entityCountryList = entityCountryList.concat(sharksDB.Map.EURCountries);
 		}
 	});
 
@@ -228,10 +220,6 @@ function renderCountriesOnRFMOMap(modelMembers) {
 			}
 			return false;
 		}).attr("class", 'backgroundLand countryHigh');
-
-	if (isEUR) {
-		$('path.EURbackgroundLand').attr("class", "EURcountryHigh");
-	}
 }
 
 function renderSpeciesDistributionMap(modelSpecies) {
@@ -281,6 +269,5 @@ function resetMapLayers() {
 			sharksDB.Map.projection.scale(width/4.2).translate([width/2,height/2]);
 		}
 		$('path.countryHigh').attr("class", "backgroundLand");
-		$('path.EURcountryHigh').attr("class", "EURbackgroundLand");
 	}
 }
