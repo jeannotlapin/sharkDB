@@ -4,9 +4,12 @@ window.sharksDB = {
 	Collections:{},
 	Map:{},
 	Routers:{},
+	Mediator: {},
 
 	initialize : function () {
 		sharksDB.Models.currentState = new sharksDB.Models.state();
+
+		sharksDB.Mediator = _({}).extend(Backbone.Events); /* used to transfert view triggered events */
 
 		sharksDB.Collections.speciesGroupsCollection =  new sharksDB.Collections.speciesGroups();
 		sharksDB.Collections.speciesGroupsCollection.comparator = 'name';

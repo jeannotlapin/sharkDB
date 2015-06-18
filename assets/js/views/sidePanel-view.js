@@ -7,14 +7,16 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 			this.listenTo(sharksDB.Collections.countriesCollection, 'update', this.renderCountries);
 			this.listenTo(sharksDB.Collections.speciesCollection, 'update', this.renderSpecies);
 			this.listenTo(sharksDB.Collections.speciesGroupsCollection, 'update', this.renderSpeciesGroup);
+			this.listenTo(sharksDB.Mediator, 'highlightCountry', this.highlightCountry);
+			this.listenTo(sharksDB.Mediator, 'unHighlightCountry', this.unHighlightCountry);
 		},
 
 		events : {
 			"click li.activeCountry" : "toCountryView",
 			"click li.activeRFMO" : "toRFMOView",
 			"click li.activeSpecies" : "toSpeciesView",
-			"mouseover li.rfmoMembers" : "highLightCountry",
-			"mouseout li.rfmoMembers" : "unHighLightCountry"
+			"mouseover li.rfmoMembers" : "mouseOverCountry",
+			"mouseout li.rfmoMembers" : "mouseOutCountry"
 		},
 
 		countryTemplate : _.template($('#countrySidePanel').html()),
@@ -51,7 +53,7 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 		},
 
 		toCountryView : function (e) {
-			this.model.set({country: e.target.dataset.countryid, rfmo: '', species: ''});
+			this.model.set({country: e.target.id.substr(2), rfmo: '', species: ''});
 		},
 
 		toSpeciesView : function (e) {
@@ -62,39 +64,39 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 			this.model.set({rfmo: e.target.dataset.rfmo, country: '', species: ''});
 		},
 
-		highLightCountry: function (e) {
-			var countryId = e.target.dataset.countryid;
-			var countriesId = [];
-			if (countryId == 'EUR') {
-				countriesId = sharksDB.Map.EURCountries;
-			} else {
-				countriesId = [countryId];
-			}
-
-			countriesId.forEach( function (d) {
-				var focusedSVGEl = $('#'+d);
-				if (focusedSVGEl.length > 0) {
-					var currentClass = focusedSVGEl.attr("class");
-					focusedSVGEl.attr("class", currentClass+" focusedCountry");
-				}
-			});
+		mouseOverCountry: function (e) {
+			sharksDB.Mediator.trigger("highlightCountry", e.target.id.substr(2));
 		},
 
-		unHighLightCountry: function (e) {
-			var countryId = e.target.dataset.countryid;
-			var countriesId = [];
-			if (countryId == 'EUR') {
-				countriesId = sharksDB.Map.EURCountries;
-			} else {
-				countriesId = [countryId];
-			}
+		mouseOutCountry: function (e) {
+			sharksDB.Mediator.trigger("unHighlightCountry", e.target.id.substr(2));
+		},
 
-			countriesId.forEach( function (d) {
-				var focusedSVGEl = $('#'+d);
-				if (focusedSVGEl.length > 0) {
-					var currentClass = focusedSVGEl.attr("class");
-					focusedSVGEl.attr("class", currentClass.replace(" focusedCountry",''));
+		highlightCountry: function (countryId) {
+			var focusedSVGEl = $('#S_'+countryId);
+			if (focusedSVGEl.length > 0) {
+				focusedSVGEl.addClass('focusedCountrySide');
+			} else { /* if we didn't found it check if we shall highlight the EU */
+				if ($.inArray(countryId, sharksDB.Map.EURCountries) != -1) {
+					focusedSVGEl = $('#S_EUR');
+					if (focusedSVGEl.length > 0) {
+						focusedSVGEl.addClass('focusedCountrySide');
+					}
 				}
-			});
+			}
+		},
+
+		unHighlightCountry: function (countryId) {
+			var focusedSVGEl = $('#S_'+countryId);
+			if (focusedSVGEl.length > 0) {
+				focusedSVGEl.removeClass('focusedCountrySide');
+			} else { /* if we didn't found it check if we shall highlight the EU */
+				if ($.inArray(countryId, sharksDB.Map.EURCountries) != -1) {
+					focusedSVGEl = $('#S_EUR');
+					if (focusedSVGEl.length > 0) {
+						focusedSVGEl.removeClass('focusedCountrySide');
+					}
+				}
+			}
 		}
 });

@@ -17,10 +17,19 @@ body, html {
 .activeCountry, .activeRFMO, .activeSpecies{
 	background-color : #edf5fe;
 }
-.activeCountry:hover, .activeRFMO:hover, .doclink:hover{
+.activeRFMO:hover, .doclink:hover{
 	background-color : #e7f0f8;
 	cursor:grab;
 }
+
+.activeCountry:hover {
+	cursor:grab;
+}
+
+.focusedCountrySide {
+	background-color : #FFA65B;
+}
+
 .list-group-item {
 	padding: 5px 12px;
 }

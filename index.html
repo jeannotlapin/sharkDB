@@ -191,7 +191,7 @@
 	<div class="panel-body">
 		<ul class="list-group">
 		<% _.each(dataArray, function (d) { %>
-			<li data-countryid='<%= d.code %>' class='list-group-item rfmoMembers <%= ((d.hasPoAs==true)?"activeCountry'":"'") %> ><%= d.name %></li>
+			<li id='S_<%= d.code %>' class='list-group-item rfmoMembers <%= ((d.hasPoAs==true)?"activeCountry'":"'") %> ><%= d.name %></li>
 		<% }); %>
 		</ul>
 	</div>

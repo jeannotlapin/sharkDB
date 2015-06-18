@@ -5,8 +5,15 @@ sharksDB.Views.Map = Backbone.View.extend({
 		this.options = options || {};
 		this.listenTo(sharksDB.Collections.entitiesCollection, 'update', this.renderEntitiesCountries);
 		this.listenTo(sharksDB.Collections.speciesCollection, 'update', this.renderSpecies);
+		this.listenTo(sharksDB.Mediator, 'highlightCountry', this.highlightCountry);
+		this.listenTo(sharksDB.Mediator, 'unHighlightCountry', this.unHighlightCountry);
 		this.listenTo(this.model, 'resetMap', this.resetMap);
 		initMap();
+	},
+
+	events : {
+		"mouseover path.backgroundLand" : "mouseOverCountry",
+		"mouseout path.backgroundLand" : "mouseOutCountry"
 	},
 
 	renderEntitiesCountries : function (entitiesModel) { /* called after loading of RFMO info, so we now have the members countries list: display them */
@@ -58,12 +65,52 @@ sharksDB.Views.Map = Backbone.View.extend({
 
 	renderSpecies : function (modelSpecies) { /* called after loading species information: check if there is a map to load, do it if needed */
 		renderSpeciesDistributionMap(modelSpecies);
+	},
+
+	highlightCountry: function (countryId) {
+		var countriesId = [];
+		if (countryId == 'EUR') {
+			countriesId = sharksDB.Map.EURCountries;
+		} else {
+			countriesId = [countryId];
+		}
+			countriesId.forEach( function (d) {
+			var focusedSVGEl = $('#M_'+d);
+			if (focusedSVGEl.length > 0) {
+				var currentClass = focusedSVGEl.attr("class");
+				focusedSVGEl.attr("class", currentClass+" focusedCountry");
+			}
+		});
+	},
+
+	unHighlightCountry: function (countryId) {
+		var countriesId = [];
+		if (countryId == 'EUR') {
+				countriesId = sharksDB.Map.EURCountries;
+		} else {
+			countriesId = [countryId];
+		}
+			countriesId.forEach( function (d) {
+			var focusedSVGEl = $('#M_'+d);
+			if (focusedSVGEl.length > 0) {
+				var currentClass = focusedSVGEl.attr("class");
+				focusedSVGEl.attr("class", currentClass.replace(" focusedCountry",''));
+			}
+		});
+	},
+
+	mouseOverCountry: function (e) {
+		sharksDB.Mediator.trigger('highlightCountry', e.target.id.substr(2));
+	},
+
+	mouseOutCountry: function (e) {
+		sharksDB.Mediator.trigger('unHighlightCountry', e.target.id.substr(2));
 	}
 });
 
 /* call at init: create map, projection and paths */
 function initMap() {
-	var width = document.getElementById('mapContainer').offsetWidth; /* get width of mapContainer div as map is hidden at load and then has no width */
+	var width = document.getElementById('mapContainer').offsetWidth -30; /* get width of mapContainer div as map is hidden at load and then has no width - 30 for mapContainer padding */
 	var height = width / 2;
 
 	var scale0 = width / 6;
@@ -130,8 +177,8 @@ function initMap() {
 	d3.select(window).on("resize", redraw);
 
 	function redraw() {
-		width = document.getElementById('map').offsetWidth;
-		height = width / 2;
+		var width = document.getElementById('map').offsetWidth;
+
 		sharksDB.Map.map
 			.attr("width", width)
 			.attr("height", height);
@@ -154,7 +201,7 @@ function setBackgroundMap() {
 				.data(topojson.feature(collection, collection.objects.countries).features)
 				.enter()
 				.append("path")
-				.attr("id", function (d) {return d.id;})
+				.attr("id", function (d) {return "M_"+d.id;})
 				.attr("class", "backgroundLand");
 
 		sharksDB.Map.backgroundLoaded = true;
