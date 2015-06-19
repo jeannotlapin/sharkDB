@@ -3,16 +3,16 @@ sharksDB.Views.SidePanel = Backbone.View.extend({
 
 		initialize: function (options) {
 			this.options = options || {};
-			this.listenTo(sharksDB.Collections.entitiesCollection, 'update', this.entitiesUpdate);
-			this.listenTo(sharksDB.Collections.countriesCollection, 'update', this.renderCountries);
-			this.listenTo(sharksDB.Collections.speciesCollection, 'update', this.renderSpecies);
-			this.listenTo(sharksDB.Collections.speciesGroupsCollection, 'update', this.renderSpeciesGroup);
+			this.listenTo(sharksDB.Collections.entitiesCollection, 'dataReady', this.entitiesUpdate);
+			this.listenTo(sharksDB.Collections.countriesCollection, 'dataReady', this.renderCountries);
+			this.listenTo(sharksDB.Collections.speciesCollection, 'dataReady', this.renderSpecies);
+			this.listenTo(sharksDB.Collections.speciesGroupsCollection, 'dataReady', this.renderSpeciesGroup);
 			this.listenTo(sharksDB.Mediator, 'highlightCountry', this.highlightCountry);
 			this.listenTo(sharksDB.Mediator, 'unHighlightCountry', this.unHighlightCountry);
 		},
 
 		events : {
-			"click li.activeCountry" : "toCountryView",
+			"click li.rfmoMembers" : "toCountryView",
 			"click li.activeRFMO" : "toRFMOView",
 			"click li.activeSpecies" : "toSpeciesView",
 			"mouseover li.rfmoMembers" : "mouseOverCountry",

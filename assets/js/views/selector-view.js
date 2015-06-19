@@ -43,7 +43,18 @@ sharksDB.Views.Selector = Backbone.View.extend({
 
 		render : function() {
 			/* get sub-elements country/species/rfmo and set their content */
-			this.$('#currentCountry').html((this.model.get('country')=='')?'Country':sharksDB.Collections.countriesCollection.get(this.model.get('country')).get('name'));
+			var countryNav = 'Country';
+			var country = this.model.get('country');
+			if (country!='') {
+				var countryModel = sharksDB.Collections.countriesCollection.get(country);
+				if (countryModel!= undefined) {
+					if ((countryModel.get('name') != '') && (countryModel.get('poas').length>0)) {
+						countryNav = countryModel.get('name');
+					}
+				}
+			}
+			this.$('#currentCountry').html(countryNav);
+
 			/* for species, we must check if it is a group or a species */
 			if (this.model.get('species')=='') {
 				this.$('#currentSpeciesGroup').html('Species');

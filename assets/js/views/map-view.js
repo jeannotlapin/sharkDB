@@ -3,8 +3,8 @@ sharksDB.Views.Map = Backbone.View.extend({
 
 	initialize : function (options) {
 		this.options = options || {};
-		this.listenTo(sharksDB.Collections.entitiesCollection, 'update', this.renderEntitiesCountries);
-		this.listenTo(sharksDB.Collections.speciesCollection, 'update', this.renderSpecies);
+		this.listenTo(sharksDB.Collections.entitiesCollection, 'dataReady', this.renderEntitiesCountries);
+		this.listenTo(sharksDB.Collections.speciesCollection, 'dataReady', this.renderSpecies);
 		this.listenTo(sharksDB.Mediator, 'highlightCountry', this.highlightCountry);
 		this.listenTo(sharksDB.Mediator, 'unHighlightCountry', this.unHighlightCountry);
 		this.listenTo(this.model, 'resetMap', this.resetMap);
@@ -12,8 +12,9 @@ sharksDB.Views.Map = Backbone.View.extend({
 	},
 
 	events : {
-		"mouseover path.backgroundLand" : "mouseOverCountry",
-		"mouseout path.backgroundLand" : "mouseOutCountry"
+		"mouseover path.countryHigh" : "mouseOverCountry",
+		"mouseout path.countryHigh" : "mouseOutCountry",
+		"click path.countryHigh" : "toCountryView"
 	},
 
 	renderEntitiesCountries : function (entitiesModel) { /* called after loading of RFMO info, so we now have the members countries list: display them */
@@ -97,6 +98,10 @@ sharksDB.Views.Map = Backbone.View.extend({
 				focusedSVGEl.attr("class", currentClass.replace(" focusedCountry",''));
 			}
 		});
+	},
+
+	toCountryView : function (e) {
+			this.model.set({country: e.target.id.substr(2), rfmo: '', species: ''});
 	},
 
 	mouseOverCountry: function (e) {

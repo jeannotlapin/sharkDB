@@ -3,10 +3,10 @@ sharksDB.Views.CentralPanel = Backbone.View.extend({
 
 		initialize: function (options) {
 			this.options = options || {};
-			this.listenTo(sharksDB.Collections.entitiesCollection, 'update', this.renderEntities);
-			this.listenTo(sharksDB.Collections.countriesCollection, 'update', this.renderCountries);
-			this.listenTo(sharksDB.Collections.speciesCollection, 'update', this.renderSpecies);
-			this.listenTo(sharksDB.Collections.speciesGroupsCollection, 'update', this.renderSpeciesGroup);
+			this.listenTo(sharksDB.Collections.entitiesCollection, 'dataReady', this.renderEntities);
+			this.listenTo(sharksDB.Collections.countriesCollection, 'dataReady', this.renderCountries);
+			this.listenTo(sharksDB.Collections.speciesCollection, 'dataReady', this.renderSpecies);
+			this.listenTo(sharksDB.Collections.speciesGroupsCollection, 'dataReady', this.renderSpeciesGroup);
 		},
 
 		events : {

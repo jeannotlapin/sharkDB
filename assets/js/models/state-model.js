@@ -16,16 +16,20 @@ sharksDB.Models.state = Backbone.Model.extend({
 			this.trigger("resetMap", false); /* hide map div */
 			var country = this.get('country');
 			var countriesModel = sharksDB.Collections.countriesCollection.get(country);
+			if (countriesModel == undefined) {
+				countriesModel = new sharksDB.Models.countries({code:country});
+				sharksDB.Collections.countriesCollection.add(countriesModel);
+			}
 			if (countriesModel.get('completed') == false) { /* we have to fetch the data*/
 				countriesModel.url =  'http://figisapps.fao.org/figis/sharks/rest/countries'+'/'+country;
 				countriesModel.fetch({
 					success : function () {
 						countriesModel.set('completed', true);
-						sharksDB.Collections.countriesCollection.trigger("update", countriesModel);
+						sharksDB.Collections.countriesCollection.trigger("dataReady", countriesModel);
 					}
 				});
 			} else {
-				sharksDB.Collections.countriesCollection.trigger("update", countriesModel);
+				sharksDB.Collections.countriesCollection.trigger("dataReady", countriesModel);
 			}
 		}
 
@@ -33,7 +37,7 @@ sharksDB.Models.state = Backbone.Model.extend({
 			var species = this.get('species');
 			this.trigger("resetMap", false); /* just hide the map for now, it may be display if needed after fetching the informations */
 			if (!isNaN(+species)) { /* this is a species group nothing to be fetch */
-				sharksDB.Collections.speciesGroupsCollection.trigger("update", sharksDB.Collections.speciesGroupsCollection.get(species));
+				sharksDB.Collections.speciesGroupsCollection.trigger("dataReady", sharksDB.Collections.speciesGroupsCollection.get(species));
 			} else { /* this is not a species group : we may fetch the complete information */
 				var speciesModel = sharksDB.Collections.speciesCollection.get(species);
 				if (speciesModel.get('completed') == false) { /* we have to fetch the data*/
@@ -41,11 +45,11 @@ sharksDB.Models.state = Backbone.Model.extend({
 					speciesModel.fetch({
 						success : function () {
 							speciesModel.set('completed', true);
-							sharksDB.Collections.speciesCollection.trigger("update", speciesModel);
+							sharksDB.Collections.speciesCollection.trigger("dataReady", speciesModel);
 						}
 					});
 				} else {
-					sharksDB.Collections.speciesCollection.trigger("update", speciesModel);
+					sharksDB.Collections.speciesCollection.trigger("dataReady", speciesModel);
 				}
 			}
 		}
@@ -59,11 +63,11 @@ sharksDB.Models.state = Backbone.Model.extend({
 				entitiesModel.fetch({
 					success : function () {
 						entitiesModel.set('completed', true);
-						sharksDB.Collections.entitiesCollection.trigger("update", entitiesModel);
+						sharksDB.Collections.entitiesCollection.trigger("dataReady", entitiesModel);
 					}
 				});
 			} else {
-				sharksDB.Collections.entitiesCollection.trigger("update", entitiesModel);
+				sharksDB.Collections.entitiesCollection.trigger("dataReady", entitiesModel);
 			}
 		}
 	}
