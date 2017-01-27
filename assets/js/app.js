@@ -64,6 +64,19 @@ window.sharksDB = {
 										speciesGroupFetch = true;
 									}
 								}
+							},
+							error: function () {
+								console.log("Error fetching group model "+model.url);
+								console.log("Skip this group");
+								/* we must proceed anyway otherwise we will get stuck in the await all */
+								groupsNb--;
+								if (groupsNb==0) { /* check we've got them all */
+									if (speciesFetch == true) { /* be sure species fetch already ended */
+										callback(null, sharksDB.Collections.speciesGroupsCollection);
+									} else {
+										speciesGroupFetch = true;
+									}
+								}
 							}
 						});
 					});
